@@ -1,4 +1,4 @@
-<% provide(:title, 'Reset password') %>
+<% provide(:title, 'パスワードの再設定') %>
 <h1>パスワードをリセットする</h1>
 
 <div class="row">
@@ -8,10 +8,10 @@
 
       <%= hidden_field_tag :email, @user.email %>
 
-      <%= f.label :password %>
+      <%= f.label :パスワード %>
       <%= f.password_field :password, class: 'form-control' %>
 
-      <%= f.label :password_confirmation, "Confirmation" %>
+      <%= f.label :パスワード再確認, "再確認" %>
       <%= f.password_field :password_confirmation, class: 'form-control' %>
 
       <%= f.submit "パスワードを再設定する", class: "btn btn-primary" %>
