@@ -1,50 +1,93 @@
 <!DOCTYPE html>
+
 <html>
   <head>
     <title>About | mini Tweet App</title>
   </head>
   <body>
-    <h1>このサイトについて</h1>
-    <p>
-      Twitterの様に、メッセージをつぶやいたり、画像を投稿したりできます！<br>
-      以下の機能があるので、ぜひ使ってみてください！<br>
-    </p>
-    <br>
-    <p>
-      <b>1.ユーザ登録</b><br>
-      ユーザ名とパスワード、メールアドレスを入力することでユーザ登録できます。<br>
-    </p>
-    <br>
-    <p>
-      <b>2.ログイン･ログアウト機構</b><br>
-      登録したメールアドレスとパスワードを使って、ログインができます。同様に、ログアウトもできます。<br>
-    </p>
-    <br>
-    <p>
-      <b>3.パスワードの再設定</b><br>
-      パスワードを忘れてしまった時の為に、パスワードを再設定することができます。<br>
-    </p>
-    <br>
-    <p>
-      <b>4.ユーザ情報の更新･削除</b><br>
-      登録しているユーザ名とメールアドレスを変更･削除する事ができます。<br>
-    </p>
-    <br>
-    <p>
-      <b>5.文書･画像の投稿と削除</b><br>
-      140文字以内の文章と、ファイルサイズが5MB以内の画像を投稿できます。また自分の投稿であれば削除できます。<br>
-    </p>
-    <br>
-    <p>
-      <b>6.投稿内容･ユーザ名の検索</b><br>
-      各ユーザのプロフィールページにて、そのユーザが投稿した内容を検索できます。<br>
-      また、ユーザ一覧ページにおいて、ユーザ名を検索することができます。<br>
-    </p>
-    <br>
-    <p>
-      <b>7.ユーザをフォローする、フォローから外す</b><br>
-      Twitterの様に、他ユーザをフォローできます。またフォローから外すこともできます。<br>
-    </p>
-    <br>
+  	<% current_user=User.find_by(id: session[:user_id]) %>
+<table>
+	<tbody>
+		<tr>
+			<td><button class="button">←</button>
+			  <%= Time.now.year %>年<%= Time.now.month %>月　時間管理表
+			  <button class="button">→</button></td>
+			<td>指定勤務時間 8:00</td>
+			<td colspan="3">7:50 基本時間</td>
+			<td>初日 <%= Time.now.month %>/<%= Date.current.beginning_of_month.day %></td>
+		</tr>
+		<tr>
+			<td>所属</td>
+			<td>氏名 <%= current_user.name %></td>
+			<td>コード</td>
+			<td></td>
+			<td>出勤日数</td>
+			<td>締め <%= Time.now.month %>/<%= Date.new(Time.now.year, Time.now.month, -1).day %></td>
+		</tr>
+	</tbody>
+</table>
+<br>
+<br>
+<table>
+	<tbody>
+		<tr>
+			<td rowspan="2">日付</td>
+			<td rowspan="2">曜日</td>
+			<td colspan="3">出社</td>
+			<td colspan="3">退社</td>
+			<td rowspan="2">在社時間</td>
+			<td rowspan="2">備考</td>
+			<td rowspan="2">残業指示</td>
+			<td rowspan="2">指示書</td>
+		</tr>
+		<tr>
+			<td>時</td>
+			<td>分</td>
+			<td></td>
+			<td>時</td>
+			<td>分</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+<% today = Date.today%>
+<% for i in 1..Date.current.end_of_month.day %>
+ <table>
+	<tbody>
+		<tr>
+			<td><%= Time.now.month %>/<%= i %></td>
+			<% this_day = Date.current.beginning_of_month + i-1 %>
+			<td><%= %w(日 月 火 水 木 金 土)[this_day.wday] %></td>
+			<td></td>
+			<td></td>
+			<td>
+				<% if today == Date.current.beginning_of_month + i-1 %>
+				<button class="button">出社</button>
+				<% end %>
+				</td>
+			<td></td>
+			<td></td>
+			<td>
+				<% if today == Date.current.beginning_of_month + i-1 %>
+				<button class="button">退社</button>
+				<% end %>
+				</td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+<% end %>
+<table>
+  <caption><%= today.strftime('%Y年%m月')%></caption>
+  <tr>
+<% month = today.strftime('%m')%>
+<% d = today.at_beginning_of_month.at_beginning_of_week%>
+<% (d..d.end_of_month).each do|c|%>
+    <tr><%= (c.strftime('%m') == month)? c.strftime('%d'): "  "%></tr>
+<% end %>
+</table>
   </body>
 </html>
