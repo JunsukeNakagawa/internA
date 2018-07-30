@@ -2,15 +2,8 @@
 <h1>ユーザ一覧</h1>
 <%= will_paginate %>
 
-<!--  検索拡張機能  -->
-<p>ユーザ検索</p>
-<%= form_tag(users_path, method: :get) do %>
-  <%= text_field_tag :search %>
-  <%= submit_tag '検索' %>
-<% end %>
+
 
 <ul class="users">
   <%= render @users %>
 </ul>
-
-<%= will_paginate %>
