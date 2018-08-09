@@ -4,12 +4,12 @@
 	<table>
 	<tbody>
 		<tr>
-			<td><%= link_to "←", root_path(day: Time.current.prev_month) %>
-			  <%= Time.now.year %>年<%= Time.now.month %>月　時間管理表
-			  <%= link_to "→", root_path(day: Time.current.next_month) %>
+			<td><%= link_to "←", root_path(first_day: @first_day.prev_month) %>
+			  <%=  @first_day.year %>年<%=  @first_day.month %>月　時間管理表
+			  <%= link_to "→", root_path(first_day: @first_day.next_month) %></td>
 			<td>指定勤務時間 8:00</td>
 			<td colspan="3">7:50 基本時間</td>
-			<td>初日 <%= Time.now.month %>/<%= Date.current.beginning_of_month.day %></td>
+			<td>初日 <%=  @first_day.month %>/<%=  @first_day.day %></td>
 		</tr>
 		<tr>
 			<td>所属</td>
@@ -20,7 +20,7 @@
 			<td>コード</td>
 			<td></td>
 			<td>出勤日数</td>
-			<td>締め <%= Time.now.month %>/<%= Date.new(Time.now.year, Time.now.month, -1).day %></td>
+			<td>締め <%=  @first_day.month %>/<%=  @last_day.day %></td>
 		</tr>
 	</tbody>
 </table>
@@ -49,32 +49,35 @@
 		</tr>
 	</tbody>
 </table>
-<% for i in 1..Date.current.end_of_month.day %>
+<% (@first_day..@last_day).each do |date|%> 
  <table>
 	<tbody>
 		<tr>
-			<td><%= Time.now.month %>/<%= i %></td>
+			<td><%= @first_day.month %>/<%= date.day %></td>
 			<td>
-				<% this_day = Date.current.beginning_of_month + i-1 %>
-				<%= %w(日 月 火 水 木 金 土)[this_day.wday] %></td>
-			<td><%= @work.attendance_time.hour if !@work.attendance_time.nil? %></td>
+				<%= %w(日 月 火 水 木 金 土)[date.wday] %></td>
+			<td>
+				<% work = Work.new(day: date.to_date) if !Work.find_by(day: date.to_date).nil? %>
+				<% work.attributes = {attendance_time: @work.attendance_time} %>
+				<%= work.attendance_time %>
+				<% work.save %>
+				</td>
 			<td><%= @work.attendance_time.min if !@work.attendance_time.nil? %></td>
 			<td>
-				<% today = Date.today %>
-				<% if @work.attendance_time.nil? && @work.leaving_time.nil? && today == Date.current.beginning_of_month + i-1 %>
-        	<%= form_for @work, :url => {:action => 'attend'} do |f| %>
-          	<%= f.submit "出社", class: "btn btn-primary" %>
-          <% end %>
+				<% if work.attendance_time.nil? && work.leaving_time.nil? && date == Date.today %>
+					<%= form_for @work, :url => {:action => 'attend'} do |f| %>
+						<%= submit_tag "出社", class: "btn btn-primary" %>
+					<% end %>
         <% end %>
 				</td>
 			<td></td>
 			<td></td>
 			<td>
-				<% if today == Date.current.beginning_of_month + i-1 && !@work.attendance_time.nil? %>
-					<%= form_tag("/works/leave") do %>
-						<input type="submit" value="退社">
-					<% end %>
-				<% end %>
+				<% if !@work.attendance_time.nil? && @work.leaving_time.nil? && date == Date.today %>
+        	<%= form_for @work, :url => {:action => 'leave'} do |f| %>
+          	<%= f.submit "退社", class: "btn btn-primary" %>
+          <% end %>
+        <% end %>
 				</td>
 			<td></td>
 			<td></td>
@@ -82,6 +85,6 @@
 		</tr>
 	</tbody>
 </table>
-  </body>
-  <% end %>
+</body>
+<% end %>
 </html>

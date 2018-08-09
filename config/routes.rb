@@ -3,7 +3,6 @@ Rails.application.routes.draw do
   get 'works/new', to: "works#new"
   post  "works/new", to: "works#new"
   
-  get "works/attend", to: "works#attend"
   post  "works/attend", to: "works#attend"
 
   get  "works/edit", to: "works#edit"

@@ -3,48 +3,20 @@ class WorksController < ApplicationController
    if logged_in?
      @user  = current_user 
    end
-	
    if @work.nil?
-     @work = Work.new
+    @work = Work.new
    end
-    # 表示月があれば取得
     if !params[:first_day].nil?
       @first_day = Date.parse(params[:first_day])
     else
-      # 表示月がなければ今月分を表示する
       @first_day = Date.new(Date.today.year, Date.today.month)
     end
-     #今月末のデータを取得
-     @last_day = @first_day.end_of_month
-  end
-  
-  def edit
-    @work = Work.find_by(id: params[:id])
-  end
-  
-  def update
-    @work = Work.find_by(id: params[:id])
-    @work.attendance_time = params[:attendance_time]
-    @work.leaving_time = params[:leaving_time]
-    if @work.save
-      flash[:notice] = "編集しました"
-      redirect_to("/works/new")
-    else
-      render("works/edit")
-    end
-  end
-  
-  def show
-    @work = Work.find_by(id: params[:id])
+    @last_day = @first_day.end_of_month
   end
   
   def attend
-   if logged_in?
-     @user  = current_user 
-   end
-   if @work.nil?
-     @work = Work.new(attendance_time: Time.current)
-   end
+    @work = Work.find_by(day: Date.today)
+    @work.attendance_time = Time.now
     if @work.save
       flash[:notice] = "出社時間を登録しました"
       redirect_to("/works/new")
@@ -52,4 +24,32 @@ class WorksController < ApplicationController
       render("works/edit")
     end
   end
+  
+  def edit
+    @work = Work.find_by(id: params[:id])
+    if !params[:first_day].nil?
+      @first_day = Date.parse(params[:first_day])
+    else
+      @first_day = Date.new(Date.today.year, Date.today.month)
+    end
+    @last_day = @first_day.end_of_month
+  end
+  
+  def update
+    #@user = User.find(params[:id])
+    @work = Work.find_by(user_id: @user.id)
+    #@work.attendance_time = params[:attendance_time]
+    #@work.leaving_time = params[:leaving_time]
+    unless @work.nil?
+      if @work.update_attributes(work_params)
+        flash[:notice] = "勤怠時間を編集しました"
+        redirect_to current_user
+      end
+    end
+  end
+  
+  def show
+    @work = Work.find_by(id: params[:id])
+  end
+  
 end
