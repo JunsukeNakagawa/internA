@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html>
+<% office_time_total = 0  %>
+<% working_days = 0 %>
   <body>
 	<table>
 	<tbody>
@@ -19,7 +21,7 @@
 				</td>
 			<td>コード</td>
 			<td></td>
-			<td>出勤日数</td>
+			<td>出勤日数 <%= working_days  %>日</td>
 			<td>締め <%=  @first_day.month %>/<%=  @last_day.day %></td>
 		</tr>
 	</tbody>
@@ -87,16 +89,17 @@
         <% end %>
 				</td>
 			<td>
-				<% if !work.attendance_time.nil? && !work.leaving_time.nil? && date == Date.today %>
+				<% if !work.attendance_time.nil? && !work.leaving_time.nil? %>
 					<% office_time = work.leaving_time - work.attendance_time %>
 					<% if office_time < 3600 %>
 						<% office_time_min = sprintf("%.0f",office_time/60) %>
 						<%= office_time_min %>分
-					<% end %>
-					<% if office_time > 3600 %>
+					<% elsif office_time > 3600 %>
 						<% office_time_hour = sprintf("%.1f",office_time/3600) %>
 						<%= office_time_hour %>時間
 					<% end %>
+					<% office_time_total += office_time.to_i %>
+					<% working_days += 1 %>
 				<% end %>
 				</td>
 			<td></td>
@@ -104,6 +107,31 @@
 		</tr>
 	</tbody>
 </table>
-</body>
+	<% if date == @last_day %>
+ <table>
+	<tbody>
+		<tr>
+			<td>総合勤務時間</td>
+			<td><% working_time = working_days * 8 %>
+				<%= working_time %>時間</td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td>今月の在社時間</td>
+			<td><% if office_time_total > 3600 %>
+					<% office_time_total_display = sprintf("%.1f",office_time_total/3600) %>時間
+					<% elsif office_time_total < 3600 %>
+					<% office_time_total_display = sprintf("%.0f",office_time_total/60) %>
+					<%= office_time_total_display %>分
+					<% end %></td>
+			<td></td>
+			<td></td>
+		</tr>
+	</tbody>
+	</table>
+	<% end %>
 <% end %>
+</body>
 </html>

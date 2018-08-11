@@ -28,6 +28,8 @@ class WorksController < ApplicationController
   def leave
     @work = Work.find_by(day: Date.today)
     @work.leaving_time = Time.now
+    if @working_days.nil?
+    end
     if @work.save
       flash[:notice] = "退社時間を登録しました"
       redirect_to("/works/new")
