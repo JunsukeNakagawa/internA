@@ -25,6 +25,17 @@ class WorksController < ApplicationController
     end
   end
   
+  def leave
+    @work = Work.find_by(day: Date.today)
+    @work.leaving_time = Time.now
+    if @work.save
+      flash[:notice] = "退社時間を登録しました"
+      redirect_to("/works/new")
+    else
+      render("works/edit")
+    end
+  end
+  
   def edit
     @work = Work.find_by(id: params[:id])
     if !params[:first_day].nil?

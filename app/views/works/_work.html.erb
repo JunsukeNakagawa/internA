@@ -57,12 +57,17 @@
 			<td>
 				<%= %w(日 月 火 水 木 金 土)[date.wday] %></td>
 			<td>
-				<% work = Work.new(day: date.to_date) if !Work.find_by(day: date.to_date).nil? %>
-				<% work.attributes = {attendance_time: @work.attendance_time} %>
-				<%= work.attendance_time %>
-				<% work.save %>
+				<% if Work.find_by(day: date).nil? %>
+					<% work = Work.new(day: date) %>
+					<% work.save %>
+				<% else %>
+					<% work = Work.find_by(day: date) %>
+				<% end %>
+				<% attendance_hour = work.attendance_time.strftime("%H") if !work.attendance_time.nil? %>
+				<%= attendance_hour %>
 				</td>
-			<td><%= @work.attendance_time.min if !@work.attendance_time.nil? %></td>
+			<td><% attendance_min = work.attendance_time.strftime("%M") if !work.attendance_time.nil? %>
+				<%= attendance_min %></td>
 			<td>
 				<% if work.attendance_time.nil? && work.leaving_time.nil? && date == Date.today %>
 					<%= form_for @work, :url => {:action => 'attend'} do |f| %>
@@ -70,16 +75,30 @@
 					<% end %>
         <% end %>
 				</td>
-			<td></td>
-			<td></td>
+			<td><% leaving_hour = work.leaving_time.strftime("%H") if !work.leaving_time.nil? %>
+				<%= leaving_hour %></td>
+			<td><% leaving_min = work.leaving_time.strftime("%M") if !work.leaving_time.nil? %>
+				<%= leaving_min %></td>
 			<td>
-				<% if !@work.attendance_time.nil? && @work.leaving_time.nil? && date == Date.today %>
+				<% if !work.attendance_time.nil? && work.leaving_time.nil? && date == Date.today %>
         	<%= form_for @work, :url => {:action => 'leave'} do |f| %>
           	<%= f.submit "退社", class: "btn btn-primary" %>
           <% end %>
         <% end %>
 				</td>
-			<td></td>
+			<td>
+				<% if !work.attendance_time.nil? && !work.leaving_time.nil? && date == Date.today %>
+					<% office_time = work.leaving_time - work.attendance_time %>
+					<% if office_time < 3600 %>
+						<% office_time_min = sprintf("%.0f",office_time/60) %>
+						<%= office_time_min %>分
+					<% end %>
+					<% if office_time > 3600 %>
+						<% office_time_hour = sprintf("%.1f",office_time/3600) %>
+						<%= office_time_hour %>時間
+					<% end %>
+				<% end %>
+				</td>
 			<td></td>
 			<td></td>
 		</tr>

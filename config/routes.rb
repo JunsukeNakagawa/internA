@@ -2,8 +2,8 @@ Rails.application.routes.draw do
   root   'works#new'
   get 'works/new', to: "works#new"
   post  "works/new", to: "works#new"
-  
   post  "works/attend", to: "works#attend"
+  post  "works/leave", to: "works#leave"
 
   get  "works/edit", to: "works#edit"
   get  "works/update", to: "works#update"

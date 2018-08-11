@@ -48,7 +48,7 @@
 			<td><%= @first_day.month %>/<%= date.day %></td>
 			<td>
 				<%= %w(日 月 火 水 木 金 土)[date.wday] %></td>
-			<%= fields_for(date, url: works_edit_path) do |f| %>
+		<%= fields_for(date, url: works_edit_path) do |f| %>
 			<td><%= f.datetime_select :attendance_time, {discard_day: true,discard_month: true} %></td>
 			<td><%= f.datetime_select :leaving_time, {discard_day: true,discard_month: true} %></td>
 			<td></td>
