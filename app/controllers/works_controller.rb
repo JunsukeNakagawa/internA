@@ -15,7 +15,7 @@ class WorksController < ApplicationController
   end
   
   def attend
-    @work = Work.find_by(day: Date.today)
+    @work = Work.find_by(day: Date.today, userid: current_user.id)
     @work.attendance_time = Time.now
     if @work.save
       flash[:notice] = "出社時間を登録しました"
@@ -26,7 +26,7 @@ class WorksController < ApplicationController
   end
   
   def leave
-    @work = Work.find_by(day: Date.today)
+    @work = Work.find_by(day: Date.today, userid: current_user.id)
     @work.leaving_time = Time.now
     if @working_days.nil?
     end
@@ -39,7 +39,7 @@ class WorksController < ApplicationController
   end
   
   def edit
-    @work = Work.find_by(id: params[:id])
+    @work = Work.find_by(id: current_user.id)
     if !params[:first_day].nil?
       @first_day = Date.parse(params[:first_day])
     else
@@ -49,15 +49,12 @@ class WorksController < ApplicationController
   end
   
   def update
-    #@user = User.find(params[:id])
-    @work = Work.find_by(user_id: @user.id)
-    #@work.attendance_time = params[:attendance_time]
-    #@work.leaving_time = params[:leaving_time]
-    unless @work.nil?
-      if @work.update_attributes(work_params)
+    @work = Work.find_by(day: Date.today, userid: current_user.id)
+    @work.attendance_time = params[:attendance_time]
+    @work.leaving_time = params[:leaving_time]
+    if @work.save
         flash[:notice] = "勤怠時間を編集しました"
-        redirect_to current_user
-      end
+        redirect_to("/users/:id")
     end
   end
   

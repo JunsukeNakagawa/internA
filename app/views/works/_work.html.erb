@@ -21,7 +21,7 @@
 				</td>
 			<td>コード</td>
 			<td></td>
-			<td>出勤日数 <%= working_days  %>日</td>
+			<td>出勤日数 <%= working_days %>日</td>
 			<td>締め <%=  @first_day.month %>/<%=  @last_day.day %></td>
 		</tr>
 	</tbody>
@@ -59,11 +59,11 @@
 			<td>
 				<%= %w(日 月 火 水 木 金 土)[date.wday] %></td>
 			<td>
-				<% if Work.find_by(day: date).nil? %>
+				<% if Work.find_by(day: date, userid: current_user.id).nil? %>
 					<% work = Work.new(day: date, userid: current_user.id) %>
 					<% work.save %>
 				<% else %>
-					<% work = Work.find_by(day: date) %>
+					<% work = Work.find_by(day: date ,userid: current_user.id) %>
 				<% end %>
 				<% attendance_hour = work.attendance_time.strftime("%H") if !work.attendance_time.nil? %>
 				<%= attendance_hour %>
@@ -121,18 +121,18 @@
 			<td></td>
 			<td>今月の在社時間</td>
 			<td><% if office_time_total > 3600 %>
-							<% surplus_officetime = 0 if office_time_total % 3600 > 0 && office_time_total % 3600 < 60 %>
-							<% surplus_officetime = 0.083 if office_time_total % 3600 >= 60 && office_time_total % 3600 < 330 %>
-							<% surplus_officetime = 0.166 if office_time_total % 3600 >= 330 && office_time_total % 3600 < 660 %>
-							<% surplus_officetime = 0.25 if office_time_total % 3600 >= 660 && office_time_total % 3600 < 990 %>
-							<% surplus_officetime = 0.333 if office_time_total % 3600 >= 990 && office_time_total % 3600 < 1320 %>
-							<% surplus_officetime = 0.416 if office_time_total % 3600 >= 1320 && office_time_total % 3600 < 1650 %>
-							<% surplus_officetime = 0.5 if office_time_total % 3600 >= 1650 && office_time_total % 3600 < 1980 %>
-							<% surplus_officetime = 0.583 if office_time_total % 3600 >= 1980 && office_time_total % 3600 < 2310 %>
-							<% surplus_officetime = 0.666 if office_time_total % 3600 >= 2310 && office_time_total % 3600 < 2640 %>
-							<% surplus_officetime = 0.75 if office_time_total % 3600 >= 2640 && office_time_total % 3600 < 2970 %>
-							<% surplus_officetime = 0.833 if office_time_total % 3600 >= 2970 && office_time_total % 3600 < 3300 %>
-							<% surplus_officetime = 0.916 if office_time_total % 3600 >= 3300 && office_time_total % 3600 < 3600 %>
+							<% surplus_officetime = 0 if (office_time_total % 3600)/60 == 0  %>
+							<% surplus_officetime = 0.083 if (office_time_total % 3600)/60 > 0 && (office_time_total % 3600)/60 <= 9 %>
+							<% surplus_officetime = 0.166 if (office_time_total % 3600)/60 > 9 && (office_time_total % 3600)/60 <= 14 %>
+							<% surplus_officetime = 0.25 if (office_time_total % 3600)/60 > 14 && (office_time_total % 3600)/60 <= 19 %>
+							<% surplus_officetime = 0.333 if (office_time_total % 3600)/60 > 19 && (office_time_total % 3600)/60 <= 24 %>
+							<% surplus_officetime = 0.416 if (office_time_total % 3600)/60 > 24 && (office_time_total % 3600)/60 <= 29 %>
+							<% surplus_officetime = 0.5 if (office_time_total % 3600)/60 > 29 && (office_time_total % 3600)/60 <= 34 %>
+							<% surplus_officetime = 0.583 if (office_time_total % 3600)/60 > 34 && (office_time_total % 3600)/60 <= 39 %>
+							<% surplus_officetime = 0.666 if (office_time_total % 3600)/60 > 39 && (office_time_total % 3600)/60 <= 44 %>
+							<% surplus_officetime = 0.75 if (office_time_total % 3600)/60 > 44 && (office_time_total % 3600)/60 <= 49 %>
+							<% surplus_officetime = 0.833 if (office_time_total % 3600)/60 > 49 && (office_time_total % 3600)/60 <= 54 %>
+							<% surplus_officetime = 0.916 if (office_time_total % 3600)/60 > 54 %>
 							<% office_time_total_display = sprintf("%.2f",office_time_total/3600+surplus_officetime) %>
 							<%= office_time_total_display %>時間
 						<% elsif office_time_total < 3600 %>

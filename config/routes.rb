@@ -8,9 +8,12 @@ Rails.application.routes.draw do
   post  "works/edit", to: "works#edit"
   get  "works/update", to: "works#update"
   post  "works/update", to: "works#update"
+  patch  "works/update", to: "works#update"
   
   get    '/signup',  to: 'users#new'
   post "signup", to: "users#create"
+  post  "users/attend", to: "users#attend"
+  post  "users/leave", to: "users#leave"
   
   get    '/login',   to: 'sessions#new'
   post   '/login',   to: 'sessions#create'
