@@ -7,9 +7,7 @@
 	<% current_user=User.find_by(id: session[:user_id]) %>
 	<tbody>
 		<tr>
-			<td><%= link_to "←", root_path(first_day: @first_day.prev_month) %>
-			  <%=  @first_day.year %>年<%=  @first_day.month %>月　時間管理表
-			  <%= link_to "→", root_path(first_day: @first_day.next_month) %></td>
+			<td><%=  @first_day.year %>年<%=  @first_day.month %>月　時間管理表</td>
 			<td>指定勤務時間 <%= current_user.workingtime if !current_user.workingtime.nil? %></td>
 			<td colspan="3"><%= current_user.basictime if !current_user.basictime.nil? %> 基本時間</td>
 			<td>初日 <%= @first_day.month %>/<%=  @first_day.day %></td>
@@ -42,8 +40,8 @@
 		</tr>
 	</tbody>
 </table>
-
 <% (@first_day..@last_day).each do |date|%> 
+<%= form_for @work, :url => {:action => 'update'}, method: "patch" do |f| %>
  <table>
 	<tbody>
 		<tr>
@@ -51,14 +49,20 @@
 			<td>
 				<%= %w(日 月 火 水 木 金 土)[date.wday] %></td>
 			<td>
-				<% work = Work.find_by(day: date, userid: current_user.id) %>
-				<%= form_for @work, :url => {:action => 'update'} do |f| %>
-				<%= f.time_select :attendance_time, :include_blank => true if work.attendance_time.nil? %>
-				<%= f.time_select :attendance_time, :default => work.attendance_time if !work.attendance_time.nil? %>
+				<% if Work.find_by(day: date, userid: current_user.id).nil? %>
+					<% work = Work.new(day: date, userid: current_user.id) %>
+					<% work.save %>
+				<% else %>
+					<% work = Work.find_by(day: date, userid: current_user.id) %>
+				<% end %>
+				<%= f.fields_for "works[]", work do |fi| %>
+					<%= fi.time_select :attendance_time, :include_blank => true if work.attendance_time.nil? %>
+					<%= fi.time_select :attendance_time, :default => work.attendance_time if !work.attendance_time.nil? %>
 				</td>
 			<td>
-				<%= f.time_select :leaving_time, :include_blank => true if work.attendance_time.nil? %>
-				<%= f.time_select :leaving_time, :default => work.leaving_time if !work.leaving_time.nil? %>
+					<%= fi.time_select :leaving_time, :include_blank => true if work.attendance_time.nil? %>
+					<%= fi.time_select :leaving_time, :default => work.leaving_time if !work.leaving_time.nil? %>
+				<% end %>
 			</td>
 			<td>
 				<% if !work.attendance_time.nil? && !work.leaving_time.nil? %>

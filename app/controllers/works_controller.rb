@@ -49,12 +49,15 @@ class WorksController < ApplicationController
   end
   
   def update
-    @work = Work.find_by(day: Date.today, userid: current_user.id)
+    @work = Work.find_by(userid: current_user.id)
     @work.attendance_time = params[:attendance_time]
     @work.leaving_time = params[:leaving_time]
     if @work.save
         flash[:notice] = "勤怠時間を編集しました"
-        redirect_to("/users/:id")
+        redirect_to("/works/edit")
+      else
+        flash[:notice] = "編集に失敗しました"
+        redirect_to("/works/edit")
     end
   end
   
