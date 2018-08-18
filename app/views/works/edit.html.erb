@@ -40,8 +40,8 @@
 		</tr>
 	</tbody>
 </table>
-<% (@first_day..@last_day).each do |date|%> 
 <%= form_for @work, :url => {:action => 'update'}, method: "patch" do |f| %>
+<% (@first_day..@last_day).each do |date|%> 
  <table>
 	<tbody>
 		<tr>
@@ -78,7 +78,7 @@
 					<% working_days += 1 %>
 				<% end %>
 				</td>
-			<td><%= f.text_area :remarks %></td>
+			<td></td>
 			<td></td>
 		</tr>
 	</tbody>

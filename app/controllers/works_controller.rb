@@ -39,6 +39,7 @@ class WorksController < ApplicationController
   end
   
   def edit
+    @user  = current_user
     @work = Work.find_by(id: current_user.id)
     if !params[:first_day].nil?
       @first_day = Date.parse(params[:first_day])
@@ -49,9 +50,15 @@ class WorksController < ApplicationController
   end
   
   def update
-    @work = Work.find_by(userid: current_user.id)
-    @work.attendance_time = params[:attendance_time]
-    @work.leaving_time = params[:leaving_time]
+    if !params[:first_day].nil?
+      @first_day = Date.parse(params[:first_day])
+    else
+      @first_day = Date.new(Date.today.year, Date.today.month)
+    end
+    @work = Work.where(userid: current_user.id).where(day: @first_day.all_month)
+    @work.each do |work|
+      work.update(attendance_time: params[:attendance_time], leaving_time: params[:leaving_time])
+    end
     if @work.save
         flash[:notice] = "勤怠時間を編集しました"
         redirect_to("/works/edit")
