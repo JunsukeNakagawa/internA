@@ -14,6 +14,10 @@ class WorksController < ApplicationController
     @last_day = @first_day.end_of_month
   end
   
+  def show
+    @work = Work.find_by(id: params[:id])
+  end
+  
   def attend
     @work = Work.find_by(day: Date.today, userid: current_user.id)
     @work.attendance_time = Time.now
@@ -57,19 +61,15 @@ class WorksController < ApplicationController
     end
     @work = Work.where(userid: current_user.id).where(day: @first_day.all_month)
     @work.each do |work|
-      work.update(attendance_time: params[:attendance_time], leaving_time: params[:leaving_time])
+      work.update_attributes(attendance_time: params[:attendance_time], leaving_time: params[:leaving_time])
     end
-    if @work.save
-        flash[:notice] = "勤怠時間を編集しました"
-        redirect_to("/works/edit")
-      else
-        flash[:notice] = "編集に失敗しました"
-        redirect_to("/works/edit")
-    end
+    flash[:notice] = "勤怠時間を編集しました"
+    redirect_to("/works/edit")
   end
   
-  def show
-    @work = Work.find_by(id: params[:id])
-  end
-  
+  private
+    def works_params
+      params.permit(works: [:attendance_time[], :leaving_time[]])[:works]
+    end
+    
 end
