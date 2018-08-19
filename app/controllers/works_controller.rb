@@ -1,4 +1,5 @@
 class WorksController < ApplicationController
+  
   def new
    if logged_in?
      @user  = current_user 
@@ -54,14 +55,9 @@ class WorksController < ApplicationController
   end
   
   def update
-    if !params[:first_day].nil?
-      @first_day = Date.parse(params[:first_day])
-    else
-      @first_day = Date.new(Date.today.year, Date.today.month)
-    end
-    @work = Work.where(userid: current_user.id).where(day: @first_day.all_month)
-    @work.each do |work|
-      work.update_attributes(attendance_time: params[:attendance_time], leaving_time: params[:leaving_time])
+    works_params.each do |id, value|
+      work=Work.find(id)
+      work.update_attributes(value)
     end
     flash[:notice] = "勤怠時間を編集しました"
     redirect_to("/works/edit")
@@ -69,7 +65,8 @@ class WorksController < ApplicationController
   
   private
     def works_params
-      params.permit(works: [:attendance_time[], :leaving_time[]])[:works]
+      params.require(:work).permit(works: [:attendance_time, :leaving_time])[:works]
     end
+
     
 end

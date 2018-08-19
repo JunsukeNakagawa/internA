@@ -56,12 +56,12 @@
 					<% work = Work.find_by(day: date, userid: current_user.id) %>
 				<% end %>
 				<%= f.fields_for "works[]", work do |fi| %>
-					<%= fi.time_select :attendance_time, :include_blank => true if work.attendance_time.nil? %>
-					<%= fi.time_select :attendance_time, :default => work.attendance_time if !work.attendance_time.nil? %>
+					<%= fi.time_field :attendance_time, :include_blank => true if work.attendance_time.nil? %>
+					<%= fi.time_field :attendance_time, :default => work.attendance_time if !work.attendance_time.nil? %>
 				</td>
 			<td>
-					<%= fi.time_select :leaving_time, :include_blank => true if work.attendance_time.nil? %>
-					<%= fi.time_select :leaving_time, :default => work.leaving_time if !work.leaving_time.nil? %>
+					<%= fi.time_field :leaving_time, :include_blank => true if work.attendance_time.nil? %>
+					<%= fi.time_field :leaving_time, :default => work.leaving_time if !work.leaving_time.nil? %>
 				<% end %>
 			</td>
 			<td>
