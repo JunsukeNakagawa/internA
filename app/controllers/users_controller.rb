@@ -50,6 +50,10 @@ class UsersController < ApplicationController
       render("works/edit")
     end
   end
+  
+  def timeedit
+    @user = current_user
+  end
 
   def create
     @user = User.new(user_params)
@@ -68,6 +72,16 @@ class UsersController < ApplicationController
   def update
     if @user.update_attributes(user_params)
       flash[:success] = "プロフィールをアップデートしました"
+      redirect_to @user
+    else
+      render 'edit'
+    end
+  end
+  
+  def timeupdate
+    @user = current_user
+    if @user.update_attributes(time_params)
+      flash[:success] = "基本時間をアップデートしました"
       redirect_to @user
     else
       render 'edit'
@@ -100,7 +114,10 @@ class UsersController < ApplicationController
       params.require(:user).permit(:name, :email, :password,
                                    :password_confirmation,:belongs_to)
     end
-
+    
+    def time_params
+      params.require(:user).permit(:workingtime,:basictime)
+    end
     # beforeアクション
 
     # 正しいユーザーかどうか確認

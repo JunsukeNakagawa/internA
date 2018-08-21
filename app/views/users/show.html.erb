@@ -5,14 +5,14 @@
 <% working_days = 0 %>
   <body>
 	<table>
-	<% current_user=User.find_by(id: session[:user_id]) %>
+	<% current_user = User.find_by(id: session[:user_id]) %>
 	<tbody>
 		<tr>
 			<td><%= link_to "←", root_path(first_day: @first_day.prev_month) %>
 			  <%=  @first_day.year %>年<%=  @first_day.month %>月　時間管理表
 			  <%= link_to "→", root_path(first_day: @first_day.next_month) %></td>
-			<td>指定勤務時間 <%= current_user.workingtime if !current_user.workingtime.nil? %></td>
-			<td colspan="3"><%= current_user.basictime if !current_user.basictime.nil? %> 基本時間</td>
+			<td>指定勤務時間 <%= current_user.workingtime %></td>
+			<td colspan="3"> 基本時間</td>
 			<td>初日 <%=  @first_day.month %>/<%=  @first_day.day %></td>
 		</tr>
 		<tr>

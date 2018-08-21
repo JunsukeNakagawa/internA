@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root   'users#show'
+  root   'works#new'
   get 'works/new', to: "works#new"
   post  "works/new", to: "works#new"
   post  "works/attend", to: "works#attend"
@@ -14,6 +14,9 @@ Rails.application.routes.draw do
   post "signup", to: "users#create"
   post  "users/attend", to: "users#attend"
   post  "users/leave", to: "users#leave"
+  get  "users/timeedit", to: "users#timeedit"
+  post  "users/update", to: "users#update"
+  post  "users/timeupdate", to: "users#timeupdate"
   
   get    '/login',   to: 'sessions#new'
   post   '/login',   to: 'sessions#create'

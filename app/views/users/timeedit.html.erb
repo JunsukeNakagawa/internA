@@ -1,63 +1,8 @@
-<!DOCTYPE html>
-<html>
-  <body>
-	<table>
-	<tbody>
-		<tr>
-			<td><%= link_to "←", root_path(first_day: @first_day.prev_month) %>
-			  <%=  @first_day.year %>年<%=  @first_day.month %>月　時間管理表
-			  <%= link_to "→", root_path(first_day: @first_day.next_month) %></td>
-			<td>指定勤務時間 8:00</td>
-			<td colspan="3">7:50 基本時間</td>
-			<td>初日 <%=  @first_day.month %>/<%=  @first_day.day %></td>
-		</tr>
-		<tr>
-			<td>所属</td>
-			<td>
-				氏名<% current_user=User.find_by(id: session[:user_id]) %>
-				<%= current_user.name %>
-				</td>
-			<td>コード</td>
-			<td></td>
-			<td>出勤日数</td>
-			<td>締め <%=  @first_day.month %>/<%=  @last_day.day %></td>
-		</tr>
-	</tbody>
-</table>
-<br>
-<%= link_to("保存する", "/works/update", class: "btn btn-lg btn-primary") %>
-<br>
-<br>
-<table>
-	<tbody>
-		<tr>
-			<td rowspan="2">日付</td>
-			<td rowspan="2">曜日</td>
-			<td colspan="3">出社</td>
-			<td colspan="3">退社</td>
-			<td rowspan="2">在社時間</td>
-			<td rowspan="2">残業指示</td>
-			<td rowspan="2">指示書</td>
-		</tr>
-	</tbody>
-</table>
-<% (@first_day..@last_day).each do |date|%> 
- <table>
-	<tbody>
-		<tr>
-			<td><%= @first_day.month %>/<%= date.day %></td>
-			<td>
-				<%= %w(日 月 火 水 木 金 土)[date.wday] %></td>
-		<%= form_for @work, :url => {:action => 'update'} do |f| %>
-			<td><%= f.time_select :attendance_time, {discard_day: true,discard_month: true} %></td>
-			<td><%= f.time_select :leaving_time, {discard_day: true,discard_month: true} %></td>
-			<td></td>
-			<td><%= f.text_field :remarks %></td>
-			<td><textarea name="instruction"></textarea></td>
-		</tr>
-		<% end %>
-	</tbody>
-</table>
-</body>
+<%= form_for @user, :url => {:action => 'timeupdate'}, method: "post" do |f| %>
+  <%= render 'shared/error_messages', object: f.object %>
+  <%= f.label :指定勤務時間 %>
+  <%= f.time_field :workingtime, class: 'form-control' %>
+  <%= f.label :基本勤務時間 %>
+  <%= f.time_field :basictime, class: 'form-control' %>
+  <%= f.submit "保存", class: "btn btn-primary" %>
 <% end %>
-</html>
