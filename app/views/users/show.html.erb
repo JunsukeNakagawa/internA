@@ -113,7 +113,7 @@
 	<tbody>
 		<tr>
 			<td>総合勤務時間</td>
-			<td><% working_time = working_days * current_user.workingtime.to_i %>
+			<td><% working_time = working_days * current_user.workingtime.hour %>
 				<%= working_time %>時間</td>
 			<td></td>
 			<td></td>

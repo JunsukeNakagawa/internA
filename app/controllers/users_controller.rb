@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :edit, :update, :destroy,
                                         :following, :followers]
-  before_action :correct_user,   only: [:edit, :update]
+  #before_action :correct_user,   only: [:edit, :update, :timeupdate]
   before_action :admin_user,     only: :destroy
   
   def index
@@ -52,7 +52,7 @@ class UsersController < ApplicationController
   end
   
   def timeedit
-    @user = current_user
+    @user = User.find(params[:id])
   end
 
   def create
@@ -79,7 +79,7 @@ class UsersController < ApplicationController
   end
   
   def timeupdate
-    @user = current_user
+    @user = User.find(params[:id])
     if @user.update_attributes(time_params)
       flash[:success] = "基本時間をアップデートしました"
       redirect_to @user

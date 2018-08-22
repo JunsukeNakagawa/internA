@@ -14,9 +14,10 @@ Rails.application.routes.draw do
   post "signup", to: "users#create"
   post  "users/attend", to: "users#attend"
   post  "users/leave", to: "users#leave"
-  get  "users/timeedit", to: "users#timeedit"
-  post  "users/update", to: "users#update"
-  post  "users/timeupdate", to: "users#timeupdate"
+  get  "users/:id/timeedit", to: "users#timeedit"
+  post  "users/:id/timeedit", to: "users#timeedit"
+  post  "users/:id/update", to: "users#update"
+  post  "users/:id/timeupdate", to: "users#timeupdate"
   
   get    '/login',   to: 'sessions#new'
   post   '/login',   to: 'sessions#create'
