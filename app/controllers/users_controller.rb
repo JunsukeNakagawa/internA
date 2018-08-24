@@ -10,7 +10,7 @@ class UsersController < ApplicationController
   
   def show
    if logged_in?
-     @user  = current_user 
+     @user = current_user
    end
    if @work.nil?
     @work = Work.new
@@ -53,6 +53,29 @@ class UsersController < ApplicationController
   
   def timeedit
     @user = User.find(params[:id])
+  end
+  
+  def attendancetime_edit
+    @user = User.find(params[:id])
+    if @work.nil?
+    @work = Work.new
+    end
+    if !params[:first_day].nil?
+      @first_day = Date.parse(params[:first_day])
+    else
+      @first_day = Date.new(Date.today.year, Date.today.month)
+    end
+    @last_day = @first_day.end_of_month
+  end
+  
+  def attendancetime_update
+    @user = User.find(params[:id])
+    works_params.each do |id, value|
+      work=Work.find(id)
+      work.update_attributes(value)
+    end
+    flash[:notice] = "勤怠時間を編集しました"
+    redirect_to("/users/#{@user.id}/attendancetime_edit")
   end
 
   def create
@@ -118,6 +141,11 @@ class UsersController < ApplicationController
     def time_params
       params.require(:user).permit(:workingtime,:basictime)
     end
+    
+    def works_params
+      params.require(:work).permit(works: [:attendance_time, :leaving_time])[:works]
+    end
+    
     # beforeアクション
 
     # 正しいユーザーかどうか確認

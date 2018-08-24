@@ -1,20 +1,16 @@
-<% # provide(:title, @user.name) %>
 <!DOCTYPE html>
 <html>
 <% office_time_total = 0  %>
 <% working_days = 0 %>
   <body>
 	<table>
-	<% session_user = User.find_by(id: session[:user_id]) %>
-	<% current_user = User.find(params[:id]) %>
+	<% current_user=User.find(params[:id]) %>
 	<tbody>
 		<tr>
-			<td><%= link_to "←", root_path(first_day: @first_day.prev_month) %>
-			  <%=  @first_day.year %>年<%=  @first_day.month %>月　時間管理表
-			  <%= link_to "→", root_path(first_day: @first_day.next_month) %></td>
-			<td>指定勤務時間 <%= current_user.workingtime.hour if !current_user.workingtime.nil? %>時間</td>
-			<td colspan="3"> 基本時間 <%= current_user.basictime.hour if !current_user.basictime.nil? %>時間 </td>
-			<td>初日 <%=  @first_day.month %>/<%=  @first_day.day %></td>
+			<td><%=  @first_day.year %>年<%=  @first_day.month %>月　時間管理表</td>
+			<td>指定勤務時間 <%= current_user.workingtime.hour if !current_user.workingtime.nil? %></td>
+			<td colspan="3"><%= current_user.basictime.hour if !current_user.basictime.nil? %> 基本時間</td>
+			<td>初日 <%= @first_day.month %>/<%=  @first_day.day %></td>
 		</tr>
 		<tr>
 			<td>所属<%= current_user.id %></td>
@@ -29,7 +25,6 @@
 	</tbody>
 </table>
 <br>
-<%= link_to("勤怠編集", "/users/#{current_user.id}/attendancetime_edit", class: "btn btn-lg btn-primary") if current_user.admin? %>
 <br>
 <br>
 <table>
@@ -43,16 +38,9 @@
 			<td rowspan="2">残業指示</td>
 			<td rowspan="2">指示書</td>
 		</tr>
-		<tr>
-			<td>時</td>
-			<td>分</td>
-			<td></td>
-			<td>時</td>
-			<td>分</td>
-			<td></td>
-		</tr>
 	</tbody>
 </table>
+<%= form_for @work, :url => {:action => 'attendancetime_update'}, method: "patch" do |f| %>
 <% (@first_day..@last_day).each do |date|%> 
  <table>
 	<tbody>
@@ -67,29 +55,15 @@
 				<% else %>
 					<% work = Work.find_by(day: date, userid: current_user.id) %>
 				<% end %>
-				<% attendance_hour = work.attendance_time.strftime("%H") if !work.attendance_time.nil? %>
-				<%= attendance_hour %>
+				<%= f.fields_for "works[]", work do |fi| %>
+					<%= fi.time_field :attendance_time, :include_blank => true if work.attendance_time.nil? %>
+					<%= fi.time_field :attendance_time, :default => work.attendance_time if !work.attendance_time.nil? %>
 				</td>
-			<td><% attendance_min = work.attendance_time.strftime("%M") if !work.attendance_time.nil? %>
-				<%= attendance_min %></td>
 			<td>
-				<% if work.attendance_time.nil? && work.leaving_time.nil? && date == Date.today && current_user == session_user %>
-					<%= form_for @work, :url => {:action => 'attend'} do |f| %>
-						<%= submit_tag "出社", class: "btn btn-primary" %>
-					<% end %>
-        <% end %>
+					<%= fi.time_field :leaving_time, :include_blank => true if work.attendance_time.nil? %>
+					<%= fi.time_field :leaving_time, :default => work.leaving_time if !work.leaving_time.nil? %>
+				<% end %>
 			</td>
-			<td><% leaving_hour = work.leaving_time.strftime("%H") if !work.leaving_time.nil? %>
-				<%= leaving_hour %></td>
-			<td><% leaving_min = work.leaving_time.strftime("%M") if !work.leaving_time.nil? %>
-				<%= leaving_min %></td>
-			<td>
-				<% if !work.attendance_time.nil? && work.leaving_time.nil? && date == Date.today && current_user == session_user %>
-        	<%= form_for @work, :url => {:action => 'leave'} do |f| %>
-          	<%= f.submit "退社", class: "btn btn-primary" %>
-          <% end %>
-        <% end %>
-				</td>
 			<td>
 				<% if !work.attendance_time.nil? && !work.leaving_time.nil? %>
 					<% office_time = work.leaving_time - work.attendance_time %>
@@ -114,10 +88,8 @@
 	<tbody>
 		<tr>
 			<td>総合勤務時間</td>
-			<td><% working_time = working_days * current_user.workingtime.hour if !current_user.workingtime.nil? %>
+			<td><% working_time = working_days * current_user.workingtime.to_i %>
 				<%= working_time %>時間</td>
-			<td></td>
-			<td></td>
 			<td></td>
 			<td></td>
 			<td></td>
@@ -141,12 +113,13 @@
 							<% office_time_total_display = sprintf("%.0f",office_time_total/60) %>
 							<%= office_time_total_display %>分
 					<% end %></td>
-			<td></td>
-			<td></td>
 		</tr>
 	</tbody>
 	</table>
+	<br>
+	<%= f.submit "保存", class: "btn btn-primary" %>
 	<% end %>
+<% end %>
 <% end %>
 </body>
 </html>
