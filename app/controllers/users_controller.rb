@@ -1,6 +1,5 @@
 class UsersController < ApplicationController
-  before_action :logged_in_user, only: [:index, :edit, :update, :destroy,
-                                        :following, :followers]
+  before_action :logged_in_user, only: [:index, :edit, :update, :destroy]
   before_action :correct_user,   only: [:edit, :update]
   before_action :admin_user,     only: [:destroy, :timeupdate]
   
@@ -11,6 +10,7 @@ class UsersController < ApplicationController
   def show
    if logged_in?
      @user = current_user
+     @working_days = Work.where(userid: params[:id]).group(:leaving_time).count
    end
    if @work.nil?
     @work = Work.new
@@ -32,7 +32,7 @@ class UsersController < ApplicationController
     @work.attendance_time = Time.now
     if @work.save
       flash[:success] = "出社時間を登録しました"
-      redirect_to("/users/:id")
+      redirect_to root_url
     else
       render("works/edit")
     end
@@ -45,7 +45,7 @@ class UsersController < ApplicationController
     end
     if @work.save
       flash[:success] = "退社時間を登録しました"
-      redirect_to("/users/:id")
+      redirect_to root_url
     else
       render("works/edit")
     end
@@ -57,6 +57,7 @@ class UsersController < ApplicationController
   
   def attendancetime_edit
     @user = User.find(params[:id])
+    @working_days = Work.where(userid: params[:id]).group(:leaving_time).count
     if @work.nil?
       @work = Work.new
     end

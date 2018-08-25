@@ -3,6 +3,7 @@ class WorksController < ApplicationController
   def new
    if logged_in?
      @user  = current_user
+     #@working_days = Work.group(:leaving_time).where(userid: current_user).count
    end
    if @work.nil?
     @work = Work.new
@@ -23,8 +24,8 @@ class WorksController < ApplicationController
     @work = Work.find_by(day: Date.today, userid: current_user.id)
     @work.attendance_time = Time.now
     if @work.save
-      flash[:notice] = "出社時間を登録しました"
-      redirect_to("/works/new")
+      flash[:success] = "出社時間を登録しました"
+      redirect_to root_url
     else
       render("works/edit")
     end
@@ -36,8 +37,8 @@ class WorksController < ApplicationController
     if @working_days.nil?
     end
     if @work.save
-      flash[:notice] = "退社時間を登録しました"
-      redirect_to("/works/new")
+      flash[:success] = "退社時間を登録しました"
+      redirect_to root_url
     else
       render("works/edit")
     end

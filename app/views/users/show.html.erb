@@ -22,7 +22,7 @@
 				</td>
 			<td>コード</td>
 			<td></td>
-			<td>出勤日数 <%= working_days %>日</td>
+			<td>出勤日数 <%= $working_day %>日</td>
 			<td>締め <%=  @first_day.month %>/<%=  @last_day.day %></td>
 		</tr>
 	</tbody>
@@ -101,6 +101,7 @@
 					<% end %>
 					<% office_time_total += office_time.to_i %>
 					<% working_days += 1 %>
+					<% $working_day = working_days %>
 				<% end %>
 				</td>
 			<td></td>
@@ -134,7 +135,7 @@
 							<% surplus_officetime = 0.75 if (office_time_total % 3600)/60 > 44 && (office_time_total % 3600)/60 <= 49 %>
 							<% surplus_officetime = 0.833 if (office_time_total % 3600)/60 > 49 && (office_time_total % 3600)/60 <= 54 %>
 							<% surplus_officetime = 0.916 if (office_time_total % 3600)/60 > 54 %>
-							<% office_time_total_display = sprintf("%.3f",office_time_total/3600+surplus_officetime) %>
+							<% office_time_total_display = sprintf("%.2f",office_time_total/3600+surplus_officetime) %>
 							<%= office_time_total_display %>時間
 						<% elsif office_time_total < 3600 %>
 							<% office_time_total_display = sprintf("%.0f",office_time_total/60) %>
