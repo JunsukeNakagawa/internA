@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :edit, :update, :destroy,
                                         :following, :followers]
-  #before_action :correct_user,   only: [:edit, :update, :timeupdate]
-  before_action :admin_user,     only: :destroy
+  before_action :correct_user,   only: [:edit, :update]
+  before_action :admin_user,     only: [:destroy, :timeupdate]
   
   def index
     @users = User.where(activated: true).paginate(page: params[:page]).search(params[:search])
@@ -31,7 +31,7 @@ class UsersController < ApplicationController
     @work = Work.find_by(day: Date.today, userid: current_user.id)
     @work.attendance_time = Time.now
     if @work.save
-      flash[:notice] = "出社時間を登録しました"
+      flash[:success] = "出社時間を登録しました"
       redirect_to("/users/:id")
     else
       render("works/edit")
@@ -44,7 +44,7 @@ class UsersController < ApplicationController
     if @working_days.nil?
     end
     if @work.save
-      flash[:notice] = "退社時間を登録しました"
+      flash[:success] = "退社時間を登録しました"
       redirect_to("/users/:id")
     else
       render("works/edit")
@@ -58,7 +58,7 @@ class UsersController < ApplicationController
   def attendancetime_edit
     @user = User.find(params[:id])
     if @work.nil?
-    @work = Work.new
+      @work = Work.new
     end
     if !params[:first_day].nil?
       @first_day = Date.parse(params[:first_day])
@@ -74,7 +74,7 @@ class UsersController < ApplicationController
       work=Work.find(id)
       work.update_attributes(value)
     end
-    flash[:notice] = "勤怠時間を編集しました"
+    flash[:success] = "勤怠時間を編集しました"
     redirect_to("/users/#{@user.id}/attendancetime_edit")
   end
 
@@ -105,7 +105,7 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     if @user.update_attributes(time_params)
       flash[:success] = "基本時間をアップデートしました"
-      redirect_to @user
+      redirect_to basictime_edit_path
     else
       render 'edit'
     end

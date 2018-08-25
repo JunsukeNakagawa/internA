@@ -1,25 +1,24 @@
-<% # provide(:title, @user.name) %>
 <!DOCTYPE html>
 <html>
 <% office_time_total = 0  %>
 <% working_days = 0 %>
   <body>
 	<table>
-	<% session_user = User.find_by(id: session[:user_id]) %>
 	<% current_user = User.find(params[:id]) %>
+	<% session_user = User.find_by(id: session[:user_id]) %>
 	<tbody>
 		<tr>
 			<td><%= link_to "←", root_path(first_day: @first_day.prev_month) %>
 			  <%=  @first_day.year %>年<%=  @first_day.month %>月　時間管理表
 			  <%= link_to "→", root_path(first_day: @first_day.next_month) %></td>
-			<td>指定勤務時間 <%= current_user.workingtime.hour if !current_user.workingtime.nil? %>時間</td>
-			<td colspan="3"> 基本時間 <%= current_user.basictime.hour if !current_user.basictime.nil? %>時間 </td>
+			<td>指定勤務時間: <%= current_user.workingtime.hour if !current_user.workingtime.nil? %>時間</td>
+			<td colspan="3"> 基本時間: <%= current_user.basictime.hour if !current_user.basictime.nil? %>時間 </td>
 			<td>初日 <%=  @first_day.month %>/<%=  @first_day.day %></td>
 		</tr>
 		<tr>
-			<td>所属<%= current_user.id %></td>
+			<td>所属:</td>
 			<td>
-				氏名<%= current_user.name %>
+				氏名:<%= current_user.name %>
 				</td>
 			<td>コード</td>
 			<td></td>
@@ -29,7 +28,7 @@
 	</tbody>
 </table>
 <br>
-<%= link_to("勤怠編集", "/users/#{current_user.id}/attendancetime_edit", class: "btn btn-lg btn-primary") if current_user.admin? %>
+<%= link_to("勤怠編集", "/users/#{current_user.id}/attendancetime_edit", class: "btn btn-lg btn-primary") if session_user.admin? || session_user == current_user %>
 <br>
 <br>
 <table>

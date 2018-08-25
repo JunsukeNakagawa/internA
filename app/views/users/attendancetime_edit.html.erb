@@ -7,15 +7,17 @@
 	<% current_user=User.find(params[:id]) %>
 	<tbody>
 		<tr>
-			<td><%=  @first_day.year %>年<%=  @first_day.month %>月　時間管理表</td>
-			<td>指定勤務時間 <%= current_user.workingtime.hour if !current_user.workingtime.nil? %></td>
-			<td colspan="3"><%= current_user.basictime.hour if !current_user.basictime.nil? %> 基本時間</td>
+			<td><%= link_to "←", attendancetime_edit_path(first_day: @first_day.prev_month) %>
+			  <%=  @first_day.year %>年<%=  @first_day.month %>月　時間管理表
+			  <%= link_to "→", attendancetime_edit_path(first_day: @first_day.next_month) %></td>
+			<td>指定勤務時間: <%= current_user.workingtime.hour if !current_user.workingtime.nil? %>時間</td>
+			<td colspan="3">基本時間: <%= current_user.basictime.hour if !current_user.basictime.nil? %>時間</td>
 			<td>初日 <%= @first_day.month %>/<%=  @first_day.day %></td>
 		</tr>
 		<tr>
-			<td>所属<%= current_user.id %></td>
+			<td>所属:</td>
 			<td>
-				氏名<%= current_user.name %>
+				氏名:<%= current_user.name %>
 				</td>
 			<td>コード</td>
 			<td></td>
@@ -88,7 +90,7 @@
 	<tbody>
 		<tr>
 			<td>総合勤務時間</td>
-			<td><% working_time = working_days * current_user.workingtime.to_i %>
+			<td><% working_time = working_days * current_user.workingtime.hour.to_i if !current_user.workingtime.nil? %>
 				<%= working_time %>時間</td>
 			<td></td>
 			<td></td>

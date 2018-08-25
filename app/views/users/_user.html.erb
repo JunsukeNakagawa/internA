@@ -1,9 +1,8 @@
 <li>
   <%= link_to user.name, user %>
   <% if current_user.admin? && !current_user?(user) %>
-    | <%= link_to "削除", user, method: :delete,
-                                  data: { confirm: "本当によろしいですか？" } %>
     | <%= link_to("基本時間編集", "/users/#{user.id}/timeedit") %>
     | <%= link_to("勤怠編集", "/users/#{user.id}/attendancetime_edit") %>
+    | <%= link_to "削除", user, method: :delete, data: { confirm: "本当によろしいですか？" } %>
   <% end %>
 </li>

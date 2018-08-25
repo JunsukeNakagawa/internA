@@ -2,7 +2,7 @@ class WorksController < ApplicationController
   
   def new
    if logged_in?
-     @user  = current_user 
+     @user  = current_user
    end
    if @work.nil?
     @work = Work.new

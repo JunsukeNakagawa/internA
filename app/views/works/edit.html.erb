@@ -7,7 +7,9 @@
 	<% current_user=User.find(params[:id]) %>
 	<tbody>
 		<tr>
-			<td><%=  @first_day.year %>年<%=  @first_day.month %>月　時間管理表</td>
+			<td><%= link_to "←", root_path(first_day: @first_day.prev_month) %>
+			  <%=  @first_day.year %>年<%=  @first_day.month %>月　時間管理表
+			  <%= link_to "→", root_path(first_day: @first_day.next_month)%></td>
 			<td>指定勤務時間 <%= current_user.workingtime.hour if !current_user.workingtime.nil? %></td>
 			<td colspan="3"><%= current_user.basictime.hour if !current_user.basictime.nil? %> 基本時間</td>
 			<td>初日 <%= @first_day.month %>/<%=  @first_day.day %></td>
@@ -88,8 +90,8 @@
 	<tbody>
 		<tr>
 			<td>総合勤務時間</td>
-			<td><% working_time = working_days * current_user.workingtime.to_i %>
-				<%= working_time %>時間</td>
+			<td><% working_time = working_days * current_user.workingtime.hour.to_i %>
+				<%= working_time.hour %>時間</td>
 			<td></td>
 			<td></td>
 			<td></td>

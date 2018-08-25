@@ -14,9 +14,9 @@ Rails.application.routes.draw do
   post "signup", to: "users#create"
   post  "users/attend", to: "users#attend"
   post  "users/leave", to: "users#leave"
-  get  "users/:id/timeedit", to: "users#timeedit"
+  get  "users/:id/timeedit", to: "users#timeedit" , as: 'basictime_edit'
   post  "users/:id/timeedit", to: "users#timeedit"
-  get  "users/:id/attendancetime_edit", to: "users#attendancetime_edit"
+  get  "users/:id/attendancetime_edit", to: "users#attendancetime_edit", as: 'attendancetime_edit'
   post  "users/:id/attendancetime_edit", to: "users#attendancetime_edit"
   post  "users/:id/attendancetime_update", to: "users#attendancetime_update"
   patch  "users/:id/attendancetime_update", to: "users#attendancetime_update"
