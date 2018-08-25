@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root   "users#show"
+  root   "works#new"
   get 'works/new', to: "works#new"
   post  "works/new", to: "works#new"
   post  "works/attend", to: "works#attend"

@@ -4,8 +4,8 @@
 <% working_days = 0 %>
   <body>
 	<table>
-	<% current_user = User.find(params[:id]) %>
-	<% session_user = User.find_by(id: session[:user_id]) %>
+	<% #current_user = User.find(params[:id]) %>
+	<% current_user = User.find_by(id: session[:user_id]) %>
 	<tbody>
 		<tr>
 			<td><%= link_to "←", root_path(first_day: @first_day.prev_month) %>
@@ -28,7 +28,7 @@
 	</tbody>
 </table>
 <br>
-<%= link_to("勤怠編集", "/users/#{@user.id}/attendancetime_edit", class: "btn btn-lg btn-primary") if current_user.admin? || current_user == session_user %>
+<%= link_to("勤怠編集", "/users/#{@user.id}/attendancetime_edit", class: "btn btn-lg btn-primary") if current_user.admin? %>
 <br>
 <br>
 <table>
