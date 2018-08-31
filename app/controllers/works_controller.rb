@@ -3,7 +3,6 @@ class WorksController < ApplicationController
   def new
    if logged_in?
      @user  = current_user
-     #@working_days = Work.group(:leaving_time).where(userid: current_user).count
    end
    if @work.nil?
     @work = Work.new
@@ -14,6 +13,7 @@ class WorksController < ApplicationController
       @first_day = Date.new(Date.today.year, Date.today.month)
     end
     @last_day = @first_day.end_of_month
+    @working_days = Work.group(:leaving_time).where(day: @first_day..@last_day, userid: @user.id).count
   end
   
   def show

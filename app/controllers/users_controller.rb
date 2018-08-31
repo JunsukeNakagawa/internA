@@ -57,7 +57,6 @@ class UsersController < ApplicationController
   
   def attendancetime_edit
     @user = User.find(params[:id])
-    @working_days = Work.where(userid: params[:id]).group(:leaving_time).count
     if @work.nil?
       @work = Work.new
     end
@@ -67,6 +66,7 @@ class UsersController < ApplicationController
       @first_day = Date.new(Date.today.year, Date.today.month)
     end
     @last_day = @first_day.end_of_month
+    @working_days = Work.group(:leaving_time).where(day: @first_day..@last_day, userid: params[:id]).count
   end
   
   def attendancetime_update
@@ -116,20 +116,6 @@ class UsersController < ApplicationController
     User.find(params[:id]).destroy
     flash[:success] = "ユーザーを削除しました"
     redirect_to users_url
-  end
-
-  def following
-    @title = "フォロー数"
-    @user  = User.find(params[:id])
-    @users = @user.following.paginate(page: params[:page])
-    render 'show_follow'
-  end
-
-  def followers
-    @title = "フォロワー数"
-    @user  = User.find(params[:id])
-    @users = @user.followers.paginate(page: params[:page])
-    render 'show_follow'
   end
 
   private
