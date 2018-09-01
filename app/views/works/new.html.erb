@@ -1,12 +1,7 @@
-<% if logged_in? %>
-  <div class="row">
-    <section class="user_info">
-      <%= render 'works/work' %>
-    </section>
-  </div>
-<% else %>
   <div class="center jumbotron">
     <h1>勤怠システム</h1>
-    <%= link_to "登録する", signup_path, class: "btn btn-lg btn-primary" %>
+    <%= link_to "ログイン", login_path, class: "btn btn-lg btn-primary" %>
+    <br>
+    <br>
+    <%= link_to "アカウント作成はこちらから", signup_path %>
   </div>
-<% end %>

@@ -10,7 +10,6 @@ class UsersController < ApplicationController
   def show
    if logged_in?
      @user = current_user
-     @working_days = Work.where(userid: params[:id]).group(:leaving_time).count
    end
    if @work.nil?
     @work = Work.new
@@ -41,8 +40,6 @@ class UsersController < ApplicationController
   def leave
     @work = Work.find_by(day: Date.today, userid: current_user.id)
     @work.leaving_time = Time.now
-    if @working_days.nil?
-    end
     if @work.save
       flash[:success] = "退社時間を登録しました"
       redirect_to root_url
@@ -76,7 +73,7 @@ class UsersController < ApplicationController
       work.update_attributes(value)
     end
     flash[:success] = "勤怠時間を編集しました"
-    redirect_to("/users/#{@user.id}/attendancetime_edit")
+    redirect_to user_path
   end
 
   def create

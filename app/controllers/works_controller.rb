@@ -13,7 +13,6 @@ class WorksController < ApplicationController
       @first_day = Date.new(Date.today.year, Date.today.month)
     end
     @last_day = @first_day.end_of_month
-    @working_days = Work.group(:leaving_time).where(day: @first_day..@last_day, userid: @user.id).count
   end
   
   def show
@@ -61,7 +60,17 @@ class WorksController < ApplicationController
       work.update_attributes(value)
     end
     flash[:notice] = "勤怠時間を編集しました"
-    redirect_to("/works/edit")
+    redirect_to user_path
+  end
+  
+  def timeupdate
+    @work = Work.find(params[:id])
+    if @user.update_attributes(time_params)
+      flash[:success] = "基本時間をアップデートしました"
+      redirect_to basictime_edit_path
+    else
+      render 'edit'
+    end
   end
   
   private
@@ -69,5 +78,7 @@ class WorksController < ApplicationController
       params.require(:work).permit(works: [:attendance_time, :leaving_time])[:works]
     end
 
-    
+    def time_params
+      params.require(:work).permit(:workingtime,:basictime)
+    end
 end

@@ -9,6 +9,9 @@ Rails.application.routes.draw do
   get  "works/update", to: "works#update"
   post  "works/update", to: "works#update"
   patch  "works/update", to: "works#update"
+  get  "works/timeedit", to: "works#timeedit" , as: 'workingtime_edit'
+  post  "works/timeedit", to: "works#timeedit"
+  post  "works/timeupdate", to: "works#timeupdate"
   
   get    '/signup',  to: 'users#new'
   post "signup", to: "users#create"

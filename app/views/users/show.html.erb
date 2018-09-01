@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <% office_time_total = 0  %>
-<% working_days = 0 %>
   <body>
 	<table>
 	<% current_user = User.find(params[:id]) %>
@@ -22,13 +21,16 @@
 				</td>
 			<td>コード</td>
 			<td></td>
-			<td>出勤日数 <%= $working_day %>日</td>
+			<td>出勤日数 
+				<% working_days = Work.where(userid: params[:id] ,day: Time.new(@first_day.year,@first_day.month).all_month).select("leaving_time").count %>
+				<%= working_days %>日
+			</td>
 			<td>締め <%=  @first_day.month %>/<%=  @last_day.day %></td>
 		</tr>
 	</tbody>
 </table>
 <br>
-<%= link_to("勤怠編集", "/users/#{current_user.id}/attendancetime_edit", class: "btn btn-lg btn-primary") if session_user.admin? || session_user == current_user %>
+<%= link_to("勤怠編集", "/users/#{current_user.id}/attendancetime_edit", class: "btn btn-lg btn-primary") if session_user.admin? %>
 <br>
 <br>
 <table>
@@ -100,8 +102,6 @@
 						<%= office_time_hour %>時間
 					<% end %>
 					<% office_time_total += office_time.to_i %>
-					<% working_days += 1 %>
-					<% $working_day = working_days %>
 				<% end %>
 				</td>
 			<td></td>
@@ -114,7 +114,7 @@
 	<tbody>
 		<tr>
 			<td>総合勤務時間</td>
-			<td><% working_time = working_days * current_user.workingtime.hour if !current_user.workingtime.nil? %>
+			<td><% working_time = working_days * session_user.workingtime.hour if !session_user.workingtime.nil? %>
 				<%= working_time %>時間</td>
 			<td></td>
 			<td></td>

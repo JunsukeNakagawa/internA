@@ -4,7 +4,6 @@
 <% working_days = 0 %>
   <body>
 	<table>
-	<% current_user = User.find_by(id: session[:user_id]) %>
 	<tbody>
 		<tr>
 			<td><%= link_to "←", root_path(first_day: @first_day.prev_month) %>
@@ -21,13 +20,15 @@
 				</td>
 			<td>コード</td>
 			<td></td>
-			<td>出勤日数: <%= @working_days.count %>日</td>
+			<td>出勤日数: 
+				<%= Work.where(userid: current_user.id,day: Time.new(@first_day.year,@first_day.month).all_month).select("leaving_time").count %>日
+			</td>
 			<td>締め <%=  @first_day.month %>/<%=  @last_day.day %></td>
 		</tr>
 	</tbody>
 </table>
 <br>
-<%= link_to("勤怠編集", "/users/#{@user.id}/attendancetime_edit", class: "btn btn-lg btn-primary") if current_user.admin? || current_user.id == @user.id  %>
+<%= link_to("勤怠編集", "/users/#{@user.id}/attendancetime_edit", class: "btn btn-lg btn-primary") if current_user.admin?  %>
 <br>
 <br>
 <table>
@@ -100,7 +101,6 @@
 					<% end %>
 					<% office_time_total += office_time.to_i %>
 					<% working_days += 1 %>
-					<% $working_day = working_days %>
 				<% end %>
 				</td>
 			<td></td>
