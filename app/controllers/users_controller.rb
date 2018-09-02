@@ -28,10 +28,10 @@ class UsersController < ApplicationController
   
   def attend
     @work = Work.find_by(day: Date.today, userid: current_user.id)
-    @work.attendance_time = Time.now
+    @work.attendance_time = Time.new(Time.now.year,Time.now.month,Time.now.day,Time.new.hour,Time.now.min,00)
     if @work.save
       flash[:success] = "出社時間を登録しました"
-      redirect_to root_url
+      redirect_to user_path
     else
       render("works/edit")
     end
@@ -39,10 +39,10 @@ class UsersController < ApplicationController
   
   def leave
     @work = Work.find_by(day: Date.today, userid: current_user.id)
-    @work.leaving_time = Time.now
+    @work.leaving_time = Time.new(Time.now.year,Time.now.month,Time.now.day,Time.new.hour,Time.now.min,00)
     if @work.save
       flash[:success] = "退社時間を登録しました"
-      redirect_to root_url
+      redirect_to user_path
     else
       render("works/edit")
     end
@@ -54,6 +54,7 @@ class UsersController < ApplicationController
   
   def attendancetime_edit
     @user = User.find(params[:id])
+    @first_day = params[:first_day].to_datetime
     if @work.nil?
       @work = Work.new
     end

@@ -10,8 +10,8 @@
 			<td><%= link_to "←", user_path(first_day: @first_day.prev_month) %>
 			  <%=  @first_day.year %>年<%=  @first_day.month %>月　時間管理表
 			  <%= link_to "→", user_path(first_day: @first_day.next_month) %></td>
-			<td>指定勤務時間: <%= current_user.workingtime.hour if !current_user.workingtime.nil? %>時間</td>
-			<td colspan="3"> 基本時間: <%= current_user.basictime.hour if !current_user.basictime.nil? %>時間 </td>
+			<td>指定勤務時間: <%= sprintf("%.2f", working_time ) %>時間</td>
+			<td colspan="3"> 基本時間: <%= sprintf("%.2f", basic_time ) %>時間 </td>
 			<td>初日 <%=  @first_day.month %>/<%=  @first_day.day %></td>
 		</tr>
 		<tr>
@@ -30,7 +30,7 @@
 	</tbody>
 </table>
 <br>
-<%= link_to("勤怠編集", "/users/#{current_user.id}/attendancetime_edit", class: "btn btn-lg btn-primary") if session_user.admin? %>
+<%= link_to("勤怠編集", attendancetime_edit_path(first_day: @first_day), class: "btn btn-lg btn-primary") if session_user.admin? %>
 <br>
 <br>
 <table>
@@ -93,14 +93,9 @@
 				</td>
 			<td>
 				<% if !work.attendance_time.nil? && !work.leaving_time.nil? %>
+					<% officeTimeDay = BigDecimal(((work.leaving_time - work.attendance_time)/60/60).to_s).round(3).to_f %>
+					<%= sprintf("%.2f", officeTimeDay ) %>時間
 					<% office_time = work.leaving_time - work.attendance_time %>
-					<% if office_time < 3600 %>
-						<% office_time_min = sprintf("%.0f",office_time/60) %>
-						<%= office_time_min %>分
-					<% elsif office_time > 3600 %>
-						<% office_time_hour = sprintf("%.2f",office_time/3600) %>
-						<%= office_time_hour %>時間
-					<% end %>
 					<% office_time_total += office_time.to_i %>
 				<% end %>
 				</td>
@@ -114,33 +109,15 @@
 	<tbody>
 		<tr>
 			<td>総合勤務時間</td>
-			<td><% working_time = working_days * session_user.workingtime.hour if !session_user.workingtime.nil? %>
-				<%= working_time %>時間</td>
+			<td><% workingTotaltime = Work.where(userid: params[:id] ,day: Time.new(@first_day.year,@first_day.month).all_month).select("leaving_time").count * basic_time if !basic_time.nil? %>
+				<%= sprintf("%.2f", BigDecimal((workingTotaltime).to_s).round(3).to_f )  %>時間</td>
 			<td></td>
 			<td></td>
 			<td></td>
 			<td></td>
 			<td></td>
 			<td>今月の在社時間</td>
-			<td><% if office_time_total > 3600 %>
-							<% surplus_officetime = 0 if (office_time_total % 3600)/60 == 0  %>
-							<% surplus_officetime = 0.083 if (office_time_total % 3600)/60 > 0 && (office_time_total % 3600)/60 <= 9 %>
-							<% surplus_officetime = 0.166 if (office_time_total % 3600)/60 > 9 && (office_time_total % 3600)/60 <= 14 %>
-							<% surplus_officetime = 0.25 if (office_time_total % 3600)/60 > 14 && (office_time_total % 3600)/60 <= 19 %>
-							<% surplus_officetime = 0.333 if (office_time_total % 3600)/60 > 19 && (office_time_total % 3600)/60 <= 24 %>
-							<% surplus_officetime = 0.416 if (office_time_total % 3600)/60 > 24 && (office_time_total % 3600)/60 <= 29 %>
-							<% surplus_officetime = 0.5 if (office_time_total % 3600)/60 > 29 && (office_time_total % 3600)/60 <= 34 %>
-							<% surplus_officetime = 0.583 if (office_time_total % 3600)/60 > 34 && (office_time_total % 3600)/60 <= 39 %>
-							<% surplus_officetime = 0.666 if (office_time_total % 3600)/60 > 39 && (office_time_total % 3600)/60 <= 44 %>
-							<% surplus_officetime = 0.75 if (office_time_total % 3600)/60 > 44 && (office_time_total % 3600)/60 <= 49 %>
-							<% surplus_officetime = 0.833 if (office_time_total % 3600)/60 > 49 && (office_time_total % 3600)/60 <= 54 %>
-							<% surplus_officetime = 0.916 if (office_time_total % 3600)/60 > 54 %>
-							<% office_time_total_display = sprintf("%.2f",office_time_total/3600+surplus_officetime) %>
-							<%= office_time_total_display %>時間
-						<% elsif office_time_total < 3600 %>
-							<% office_time_total_display = sprintf("%.0f",office_time_total/60) %>
-							<%= office_time_total_display %>分
-					<% end %></td>
+			<td><%= BigDecimal(((office_time_total)/60/60).to_s).round(3).to_f %>時間</td>
 			<td></td>
 			<td></td>
 		</tr>

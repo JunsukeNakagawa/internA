@@ -13,8 +13,6 @@ Rails.application.routes.draw do
   post  "works/timeedit", to: "works#timeedit"
   post  "works/timeupdate", to: "works#timeupdate"
   
-  get    '/signup',  to: 'users#new'
-  post "signup", to: "users#create"
   post  "users/attend", to: "users#attend"
   post  "users/leave", to: "users#leave"
   get  "users/:id/timeedit", to: "users#timeedit" , as: 'basictime_edit'
@@ -27,6 +25,8 @@ Rails.application.routes.draw do
   patch  "users/:id/update", to: "users#update"
   post  "users/:id/timeupdate", to: "users#timeupdate"
   
+  get    '/signup',  to: 'users#new'
+  post "signup", to: "users#create"
   get    '/login',   to: 'sessions#new'
   post   '/login',   to: 'sessions#create'
   delete '/logout',  to: 'sessions#destroy'

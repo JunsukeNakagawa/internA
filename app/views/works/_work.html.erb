@@ -97,7 +97,7 @@
 						<%= office_time_min %>分
 					<% elsif office_time > 3600 %>
 						<% office_time_hour = sprintf("%.2f",office_time/3600) %>
-						<%= office_time_hour %>時間
+						<% office_time_hour %>時間
 					<% end %>
 					<% office_time_total += office_time.to_i %>
 					<% working_days += 1 %>
