@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
   root   "works#new"
   get 'works/new', to: "works#new"
-  post  "works/new", to: "works#new"
   post  "works/attend", to: "works#attend"
   post  "works/leave", to: "works#leave"
   get  "works/edit", to: "works#edit"
@@ -13,8 +12,8 @@ Rails.application.routes.draw do
   post  "works/timeedit", to: "works#timeedit"
   post  "works/timeupdate", to: "works#timeupdate"
   
-  post  "users/attend", to: "users#attend"
-  post  "users/leave", to: "users#leave"
+  patch  "users/:id/attend", to: "users#attend"
+  patch  "users/:id/leave", to: "users#leave"
   get  "users/:id/timeedit", to: "users#timeedit" , as: 'basictime_edit'
   post  "users/:id/timeedit", to: "users#timeedit"
   get  "users/:id/attendancetime_edit", to: "users#attendancetime_edit", as: 'attendancetime_edit'

@@ -15,7 +15,7 @@
 			<td>初日 <%=  @first_day.month %>/<%=  @first_day.day %></td>
 		</tr>
 		<tr>
-			<td>所属:</td>
+			<td>所属:<%= current_user.affiliation %></td>
 			<td>
 				氏名:<%= current_user.name %>
 				</td>
@@ -96,7 +96,7 @@
 					<% officeTimeDay = BigDecimal(((work.leaving_time - work.attendance_time)/60/60).to_s).round(3).to_f %>
 					<%= sprintf("%.2f", officeTimeDay ) %>時間
 					<% office_time = work.leaving_time - work.attendance_time %>
-					<% office_time_total += office_time.to_i %>
+					<% office_time_total += office_time %>
 				<% end %>
 				</td>
 			<td></td>
@@ -117,7 +117,7 @@
 			<td></td>
 			<td></td>
 			<td>今月の在社時間</td>
-			<td><%= BigDecimal(((office_time_total)/60/60).to_s).round(3).to_f %>時間</td>
+			<td><%= sprintf("%.2f", BigDecimal(((office_time_total)/60/60).to_s).round(3).to_f) %>時間</td>
 			<td></td>
 			<td></td>
 		</tr>

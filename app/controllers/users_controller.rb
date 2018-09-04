@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :edit, :update, :destroy]
-  before_action :correct_user,   only: [:edit, :update]
+  #before_action :correct_user,   only: [:edit, :update]
   before_action :admin_user,     only: [:destroy, :timeupdate]
   
   def index
@@ -8,6 +8,7 @@ class UsersController < ApplicationController
   end
   
   def show
+    @work = Work.find_by(id: params[:id])
    if logged_in?
      @user = current_user
    end
@@ -92,6 +93,7 @@ class UsersController < ApplicationController
   end
 
   def update
+    @user = User.find(params[:id])
     if @user.update_attributes(user_params)
       flash[:success] = "プロフィールをアップデートしました"
       redirect_to @user
@@ -120,7 +122,7 @@ class UsersController < ApplicationController
 
     def user_params
       params.require(:user).permit(:name, :email, :password,
-                                   :password_confirmation,:belongs_to)
+                                   :password_confirmation,:affiliation)
     end
     
     def time_params

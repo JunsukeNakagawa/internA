@@ -1,18 +1,6 @@
 class WorksController < ApplicationController
   
   def new
-   if logged_in?
-     @user  = current_user
-   end
-   if @work.nil?
-    @work = Work.new
-   end
-    if !params[:first_day].nil?
-      @first_day = Date.parse(params[:first_day])
-    else
-      @first_day = Date.new(Date.today.year, Date.today.month)
-    end
-    @last_day = @first_day.end_of_month
   end
   
   def show
