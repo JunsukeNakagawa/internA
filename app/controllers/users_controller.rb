@@ -65,7 +65,6 @@ class UsersController < ApplicationController
       @first_day = Date.new(Date.today.year, Date.today.month)
     end
     @last_day = @first_day.end_of_month
-    @working_days = Work.group(:leaving_time).where(day: @first_day..@last_day, userid: params[:id]).count
   end
   
   def attendancetime_update

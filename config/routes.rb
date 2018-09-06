@@ -1,16 +1,6 @@
 Rails.application.routes.draw do
   root   "works#new"
   get 'works/new', to: "works#new"
-  post  "works/attend", to: "works#attend"
-  post  "works/leave", to: "works#leave"
-  get  "works/edit", to: "works#edit"
-  post  "works/edit", to: "works#edit"
-  get  "works/update", to: "works#update"
-  post  "works/update", to: "works#update"
-  patch  "works/update", to: "works#update"
-  get  "works/timeedit", to: "works#timeedit" , as: 'workingtime_edit'
-  post  "works/timeedit", to: "works#timeedit"
-  post  "works/timeupdate", to: "works#timeupdate"
   
   patch  "users/:id/attend", to: "users#attend"
   patch  "users/:id/leave", to: "users#leave"

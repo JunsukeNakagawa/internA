@@ -49,7 +49,7 @@
 					<% officeTimeDay = BigDecimal(((work.leaving_time - work.attendance_time)/60/60).to_s).round(3).to_f %>
 					<%= sprintf("%.2f", officeTimeDay ) %>時間
 					<% office_time = work.leaving_time - work.attendance_time %>
-					<% office_time_total += office_time.to_i %>
+					<% office_time_total += office_time %>
 				<% end %>
 				</td>
 			<td></td>
