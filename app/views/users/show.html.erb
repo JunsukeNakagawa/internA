@@ -30,7 +30,7 @@
 	</tbody>
 </table>
 <br>
-<%= link_to("勤怠編集", attendancetime_edit_path(first_day: @first_day), class: "btn btn-lg btn-primary") if session_user.admin? %>
+<%= link_to("勤怠編集", attendancetime_edit_path(first_day: @first_day), class: "btn btn-lg btn-primary") if session_user.admin? || current_user == session_user %>
 <br>
 <br>
 <table>
