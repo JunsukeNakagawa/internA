@@ -16,7 +16,7 @@ class UsersController < ApplicationController
     @work = Work.new
    end
     if !params[:first_day].nil?
-      @first_day = Date.parse(params[:first_day])
+      @first_day = Date.zone.parse(params[:first_day])
     else
       @first_day = Date.new(Date.today.year, Date.today.month)
     end
