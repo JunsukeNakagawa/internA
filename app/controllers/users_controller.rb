@@ -1,7 +1,8 @@
 class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :edit, :update, :destroy]
-  #before_action :correct_user,   only: [:edit, :update]
-  before_action :admin_user,     only: [:destroy, :timeupdate]
+  before_action :show_user, only: [:show]
+  before_action :correct_user,   only: [:edit, :update]
+  before_action :admin_user,     only: [:destroy, :timeupdate ,:attendancetime_edit]
   
   def index
     @users = User.where(activated: true).paginate(page: params[:page]).search(params[:search])
@@ -16,7 +17,7 @@ class UsersController < ApplicationController
     @work = Work.new
    end
     if !params[:first_day].nil?
-      @first_day = Date.zone.parse(params[:first_day])
+      @first_day = Date.parse(params[:first_day])
     else
       @first_day = Date.new(Date.today.year, Date.today.month)
     end
@@ -138,6 +139,11 @@ class UsersController < ApplicationController
     def correct_user
       @user = User.find(params[:id])
       redirect_to(root_url) unless current_user?(@user)
+    end
+    
+    def show_user
+      @user = User.find(params[:id])
+      redirect_to(root_url) if @user != User.find_by(id: session[:user_id]) unless current_user.admin?
     end
     
     # 管理者かどうか確認
