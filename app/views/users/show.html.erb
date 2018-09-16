@@ -10,8 +10,8 @@
 			<td><%= link_to "←", user_path(first_day: @first_day.prev_month) %>
 			  <%=  @first_day.year %>年<%=  @first_day.month %>月　時間管理表
 			  <%= link_to "→", user_path(first_day: @first_day.next_month) %></td>
-			<td>指定勤務時間: <%= sprintf("%.2f", working_time  ) %>時間</td>
-			<td colspan="3"> 基本時間: <%= sprintf("%.2f", basic_time  ) %>時間 </td>
+			<td>指定勤務時間: <%= sprintf("%.2f", working_time) %>時間</td>
+			<td colspan="3"> 基本時間: <%= sprintf("%.2f", basic_time ) %>時間 </td>
 			<td>初日 <%=  @first_day.month %>/<%=  @first_day.day %></td>
 		</tr>
 		<tr>
