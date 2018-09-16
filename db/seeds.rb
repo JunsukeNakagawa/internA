@@ -3,8 +3,8 @@ User.create!(name:  "Example User",
              password:              "foobar",
              password_confirmation: "foobar",
              admin:     true,
-             workingtime: (Time.zone.local(2018, 8, 30, 19,0) - Time.zone.local(2018, 8, 30, 10,0))/60/60 ,
-             basictime: (Time.zone.local(2018, 8, 30, 19,0) - Time.zone.local(2018, 8, 30, 10,0))/60/60 ,
+             workingtime: Time.new(Time.now.year,Time.now.month,Time.now.day,00,00,00),
+             basictime: Time.new(Time.now.year,Time.now.month,Time.now.day,00,00,00) ,
              activated: true,
              activated_at: Time.zone.now)
 
