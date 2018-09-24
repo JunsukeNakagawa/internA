@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180904141709) do
+ActiveRecord::Schema.define(version: 20180924131851) do
 
   create_table "microposts", force: :cascade do |t|
     t.text "content"
@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(version: 20180904141709) do
     t.time "basictime"
     t.time "workingtime"
     t.string "affiliation"
+    t.datetime "working_time_End"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
