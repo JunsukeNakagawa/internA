@@ -77,6 +77,9 @@ class UsersController < ApplicationController
     flash[:success] = "勤怠時間を編集しました"
     redirect_to user_path
   end
+  
+  def employees_display
+  end
 
   def create
     @user = User.new(user_params)

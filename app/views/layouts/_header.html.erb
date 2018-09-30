@@ -7,6 +7,8 @@
         <% if logged_in? %>
             <% if current_user.try(:admin?) %>
               <li><%= link_to "ユーザ一覧", users_path %></li>
+              <li><%= link_to "出勤社員一覧", employees_display_path %></li>
+              <li><%= link_to "拠点情報の修正", users_path %></li>
               <li><%= link_to "基本情報の修正", basictime_edit_url(current_user) %></li>
             <% end %>
           <li class="dropdown">

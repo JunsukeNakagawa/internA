@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   post  "users/:id/update", to: "users#update"
   patch  "users/:id/update", to: "users#update"
   post  "users/:id/timeupdate", to: "users#timeupdate"
+  get  "/employees_display", to: "users#employees_display" , as: 'employees_display'
   
   get    '/signup',  to: 'users#new'
   post "signup", to: "users#create"
