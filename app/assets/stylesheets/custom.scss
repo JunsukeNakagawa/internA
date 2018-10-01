@@ -325,3 +325,24 @@ span.picture {
   border-radius: 0 0 2px 2px;
   font-size: 14px;
 }
+
+div#menu {
+    width: 300px;
+    border: 1px solid #CCC;
+    padding: 10px;
+    margin: 10px;
+}
+ul.accordion ul {
+    display:none;
+}
+p.click {
+    display: block;
+    padding: 10px 0;
+    border-bottom: 1px dotted #0099CC;
+}
+ul.accordion .list {
+    padding-left: 20px;
+}
+ul.accordion .list li {
+    padding: 10px 0;
+}

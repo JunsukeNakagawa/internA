@@ -16,12 +16,10 @@
 //= require turbolinks
 //= require_tree .
 
-// [.syncer-acdn]にクリックイベントを設定する
-$( '.syncer-acdn' ).click( function()
-{
-	// [data-target]の属性値を代入する
-	var target = $( this ).data( 'target' ) ;
+/* global $ */
 
-	// [target]と同じ名前のIDを持つ要素に[slideToggle()]を実行する
-	$( '#' + target ).slideToggle() ;
-} ) ;
+$(function(){
+    $('.accordion p').click(function(){
+        $(this).next('ul').slideToggle(500);
+    });
+});

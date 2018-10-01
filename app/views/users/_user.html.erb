@@ -2,19 +2,15 @@
   <%= link_to user.name, user %>
   <% if current_user.admin? && !current_user?(user) %>
     | <%= link_to "削除", user, method: :delete, data: { confirm: "本当によろしいですか？" },class: "btn btn-lg btn-primary" %>
-    <ul>
-    	<li><p><a class="syncer-acdn" data-target="syncer-acdn-01">メニュー1</a></p>
-    		<ul id="syncer-acdn-01">
-    			<li>子メニュー 1-1</li>
-    			<li>子メニュー 1-2</li>
-    		</ul>
-    	</li>
-    	<li><p><a class="syncer-acdn" data-target="syncer-acdn-02">メニュー2</a></p>
-    		<ul id="syncer-acdn-02">
-    			<li>子メニュー 2-1</li>
-    			<li>子メニュー 2-2</li>
-    		</ul>
-    	</li>
-    </ul>
+        <div id="menu">
+          <ul class="accordion">
+              <li>
+                  <p class="btn btn-lg btn-primary">編集</p>
+                  <ul class="list">
+                      <li><a href="#">テスト1-1</a></li>
+                  </ul>
+              </li>
+          </ul>
+        </div>
   <% end %>
 </li>
