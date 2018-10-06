@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180930015700) do
+ActiveRecord::Schema.define(version: 20181006070955) do
 
   create_table "microposts", force: :cascade do |t|
     t.text "content"
@@ -50,7 +50,8 @@ ActiveRecord::Schema.define(version: 20180930015700) do
     t.string "affiliation"
     t.datetime "working_time_End"
     t.integer "uid"
-    t.integer "superior"
+    t.boolean "superior"
+    t.integer "cardID"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
@@ -64,6 +65,10 @@ ActiveRecord::Schema.define(version: 20180930015700) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "userid"
+    t.datetime "scheduled_end_time"
+    t.boolean "checkbox"
+    t.text "work_description"
+    t.integer "check_by_boss"
   end
 
 end

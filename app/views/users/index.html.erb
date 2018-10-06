@@ -2,7 +2,10 @@
 <h1>ユーザ一覧</h1>
 <%= will_paginate %>
 
-
+<%= form_tag({controller: "users", action: "import", method: "post"}, {multipart: true}) do %>
+  <%= file_field_tag :file %>
+  <%= submit_tag "csvをインポート" %>
+<% end %>
 
 <ul class="users">
   <%= render @users %>

@@ -1,0 +1,87 @@
+<!-- 2.モーダルの配置 -->
+<div class="modal" id="modal" tabindex="-1">
+    <div class="modal-dialog">
+
+        <!-- 3.モーダルのコンテンツ -->
+         <%= form_tag({:controller => 'works', :action => 'apply_overwork'}, {:method => :patch}) do %>
+         <% @work=Work.new %>
+        
+        <div class="modal-content">
+            <!-- 4.モーダルのヘッダ -->
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <h4 class="modal-title" id="modal-label">【残業申請】</h4>
+            </div>
+            <!-- 5.モーダルのボディ -->
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <td>日付</td>
+                        <td>曜日</td>
+                        <td>終了予定時刻</td>
+                        <td>翌日</td>
+                        <td>業務処理内容</td>
+                        <td>指示者確認㊞</td>
+                    </tr>
+                    <tr>
+                        <td id="modal-date"></td>
+                        <td id="modal-day"></td>
+                        <td>
+                            <%= fields_for  @work do |fi| %>
+                                <%= fi.time_field :scheduled_end_time, {class: 'form-control', required: true}  %>
+                            <% end %>
+                        </td>
+                        <td class="center">
+                            <%= fields_for @work do |fi| %>
+                                <%= fi.check_box :checkbox, {},checked_value = "true",unchecked_value = "false" %>
+                            <% end %>
+                        </td>
+                        <td>
+                            <%= fields_for  @work do |fi| %>
+                                <%= fi.text_field :work_description, {class: 'form-control'}  %>
+                            <% end %>
+                        </td>
+                        <td>
+                            <%= fields_for @work do |fi| %>
+                                <%= fi.select :check_by_boss, [["上長A", "上長A"],["上長B", "上長B"],["上長C", "上長C"]], {prompt: ""},{required: true} %>
+                            <% end %>
+                        </td>
+                            <%= fields_for @work do |fi| %>
+                                <%= fi.hidden_field :day, :value => "",:id => "test" %>
+                            <% end %>
+                    </tr>
+                </table>
+            </div>
+            <!-- 6.モーダルのフッタ -->
+            <div class="modal-footer">
+                <%= submit_tag "変更を送信する", class: "btn btn-primary" %>
+            </div>
+        </div>
+        <% end %>
+    </div>
+</div>
+
+<script>
+  $('#modal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) //モーダルを呼び出すときに使われたボタンを取得
+  var date = button.data('date') //data-date の値を取得
+  var day = button.data('day') //data-day の値を取得
+  var date_1 = button.data('date_1') //data-date_1 の値を取得
+  
+  //Ajaxの処理はここに
+  var modal = $(this)  //モーダルを取得
+  modal.find('#modal-date').text(date) //モーダルの日付に値を表示
+  modal.find('#modal-day').text(day) //モーダルの曜日に値を表示
+  modal.find('#test').val(date_1)
+  
+  
+})
+// var my_email= "12"
+//   $(document).ready(function(){
+//         $("#email_field").val(my_email);
+//   });
+   
+   
+</script>

@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html>
-<% office_time_total = 0  %>
-<% working_days = 0 %>
 <% current_user=User.find(params[:id]) %>
 <body>
 <br>
@@ -15,8 +13,8 @@
 			<td colspan="3">出社</td>
 			<td colspan="3">退社</td>
 			<td rowspan="2">在社時間</td>
-			<td rowspan="2">残業指示</td>
-			<td rowspan="2">指示書</td>
+			<td rowspan="2">備考</td>
+			<td rowspan="2">指示書確認㊞</td>
 		</tr>
 	</tbody>
 </table>
@@ -36,24 +34,40 @@
 					<% work = Work.find_by(day: date, userid: current_user.id) %>
 				<% end %>
 				<%= f.fields_for "works[]", work do |fi| %>
-					<%= fi.time_field :attendance_time, :include_blank => true if work.attendance_time.nil? %>
-					<%= fi.time_field :attendance_time, :default => work.attendance_time if !work.attendance_time.nil? %>
-				</td>
-			<td>
-					<%= fi.time_field :leaving_time, :include_blank => true if work.attendance_time.nil? %>
-					<%= fi.time_field :leaving_time, :default => work.leaving_time if !work.leaving_time.nil? %>
-				<% end %>
+					<% if work.attendance_time.nil? %>
+						<%= fi.time_field :attendance_time, :include_blank => true %>
+					<% else %>
+						<%= fi.time_field :attendance_time, :default => work.attendance_time %>
+					<% end %>
+					</td>
+				<td>
+					<% if work.leaving_time.nil? %>
+						<%= fi.time_field :leaving_time, :include_blank => true %>
+					<% else %>
+						<%= fi.time_field :leaving_time, :default => work.leaving_time %>
+					<% end %>
 			</td>
 			<td>
 				<% if !work.attendance_time.nil? && !work.leaving_time.nil? %>
 					<% officeTimeDay = BigDecimal(((work.leaving_time - work.attendance_time)/60/60).to_s).round(3).to_f %>
 					<%= sprintf("%.2f", officeTimeDay ) %>時間
-					<% office_time = work.leaving_time - work.attendance_time %>
-					<% office_time_total += office_time %>
 				<% end %>
 				</td>
-			<td></td>
-			<td></td>
+			<td>
+					<% if work.work_description.nil? %>
+						<%= fi.text_field :work_description, :include_blank => true %>
+					<% else %>
+						<%= fi.text_field :work_description, :default => work.work_description %>
+					<% end %>
+			</td>
+			<td>
+					<% if work.check_by_boss.nil? %>
+						<%= fi.select :check_by_boss, :include_blank => true %>
+					<% else %>
+						<%= fi.select :check_by_boss, work.check_by_boss %>
+					<% end %>
+			</td>
+			<% end %>
 		</tr>
 	</tbody>
 </table>

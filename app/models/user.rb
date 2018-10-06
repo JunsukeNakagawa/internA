@@ -108,6 +108,21 @@ class User < ApplicationRecord
     end
   end
   
+  def self.import(file)
+    CSV.foreach(file.path, headers: true) do |row|
+
+      obj = new
+      obj.attributes = row.to_hash.slice(*updatable_attributes)
+
+      obj.save!
+    end
+  end
+  
+  def self.updatable_attributes
+    ["id", "name", "email", "affiliation", "uid", "cardID", "basictime", "workingtime", "working_time_End",
+    "superior", "admin", "password"]
+  end
+  
   private
     # メールアドレスをすべて小文字にする
     def downcase_email

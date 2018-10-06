@@ -21,7 +21,7 @@
 			<td colspan="3">
 				氏名:<%= current_user.name %>
 				</td>
-			<td>コード</td>
+			<td>コード:<%= current_user.uid %></td>
 			<td></td>
 			<td>出勤日数 
 				<% working_days = Work.where(userid: params[:id] ,day: Time.new(@first_day.year,@first_day.month).all_month).select("leaving_time").count %>
@@ -32,11 +32,11 @@
 	</tbody>
 </table>
 <br>
-【所属長承認申請のお知らせ】
+<%= note_from_boss %>
 <br>
-【勤怠変更のお知らせ】
+<%= note_attendance_change %>
 <br>
-【残業申請のお知らせ】
+<%= note_overtime_application %>
 <br>
 <br>
 <%= link_to("勤怠編集", attendancetime_edit_path(first_day: @first_day), class: "btn btn-lg btn-primary") if session_user.admin? || current_user == session_user %>
@@ -77,7 +77,12 @@
  <table>
 	<tbody>
 		<tr>
-			<td><%= submit_tag "残業申請", class: "btn btn-primary" %></td>
+			<td>
+				<button class="btn btn-primary" data-toggle="modal" data-target="#modal" data-date="<%=date.month%>/<%=date.day%>"
+									data-date_1="<%=date.year%>-<%=date.month%>-<%=date.day%>" data-day="<%= %w(日 月 火 水 木 金 土)[date.wday]%>">
+                残業申請
+        </button>
+				<%= render 'works/modal_overwork_application' %></td>
 			<td><%= @first_day.month %>/<%= date.day %></td>
 			<td>
 				<%= %w(日 月 火 水 木 金 土)[date.wday] %></td>
@@ -119,10 +124,10 @@
 					<% office_time_total += office_time %>
 				<% end %>
 				</td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
+			<td><%= work.scheduled_end_time.hour if !work.scheduled_end_time.nil? %></td>
+			<td><%= work.scheduled_end_time.min if !work.scheduled_end_time.nil? %></td>
+			<td><%= work.work_description if !work.work_description.nil? %></td>
+			<td><%= work.check_by_boss if !work.check_by_boss.nil? %></td>
 		</tr>
 	</tbody>
 </table>
@@ -142,7 +147,14 @@
 			<td></td>
 			<td></td>
 			<td></td>
-			<td rowspan="1" colspan="2">所属長承認　未<%= submit_tag "申請", class: "btn btn-primary" %></td>
+			<td rowspan="1" colspan="2">所属長承認　未
+			<%= form_tag({:controller => 'works', :action => 'apply_attendance'}, {:method => :patch}) do %>
+				<%= fields_for @work do |f| %>
+	      	<%= f.select :check_by_boss, [["上長A", "上長A"],["上長B", "上長B"],["上長C", "上長C"]], {prompt: ""},{required: true} %>
+	      	<%= submit_tag "申請", class: "btn btn-primary" %>
+	      <% end %>
+	    <% end %>
+      </td>
 		</tr>
 	</tbody>
 	</table>

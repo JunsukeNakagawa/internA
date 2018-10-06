@@ -1,3 +1,5 @@
+require 'csv'
+
 class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :edit, :update, :destroy]
   before_action :show_user, only: [:show, :attendancetime_edit, :attendancetime_update]
@@ -80,7 +82,7 @@ class UsersController < ApplicationController
   end
   
   def employees_display
-    # users = Work.where(day: Time.now, attendance_time: !nil, leaving_time: nil).select(activated: true)
+    # @users = Work.where(day: Time.now, attendance_time: !nil, leaving_time: nil).select(activated: true)
     # users.each do |user|
     #   @working_user = User.where(id: users.userid)
     # end
@@ -101,17 +103,17 @@ class UsersController < ApplicationController
   end
 
   def update
-    @user = User.find(params[:id])
+    @user = User.find_by(id: params[:id])
     if @user.update_attributes(user_params)
       flash[:success] = "プロフィールをアップデートしました"
-      redirect_to @user
+      redirect_to user_url
     else
-      render 'edit'
+      render @users
     end
   end
   
   def timeupdate
-    @user = User.find(params[:id])
+    @user = User.find_by(params[:id])
     if @user.update_attributes(time_params)
       flash[:success] = "基本時間をアップデートしました"
       redirect_to basictime_edit_path
@@ -125,12 +127,17 @@ class UsersController < ApplicationController
     flash[:success] = "ユーザーを削除しました"
     redirect_to users_url
   end
+  
+  def import
+    Object.import(params[:file])
+    redirect_to users_url
+  end
 
   private
 
     def user_params
-      params.require(:user).permit(:name, :email, :password,
-                                   :password_confirmation,:affiliation)
+      params.require(:user).permit(:id, :name, :email, :password,:affiliation,
+                                   :uid, :cardID, :basictime, :workingtime, :working_time_End)
     end
     
     def time_params

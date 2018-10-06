@@ -5,10 +5,45 @@
         <div id="menu">
           <ul class="accordion">
               <li>
-                  <p class="btn btn-lg btn-primary">編集</p>
-                  <ul class="list">
-                      <li><a href="#">テスト1-1</a></li>
-                  </ul>
+                <p class="btn btn-lg btn-primary">編集</p>
+                <ul class="list">
+                  <li>
+                    <%= form_for user do |f| %>
+                      <%= render 'shared/error_messages', object: f.object %>
+                    
+                      <%= f.label :ユーザ名 %>
+                      <%= f.text_field :name, class: 'form-control' %>
+                    
+                      <%= f.label :メールアドレス %>
+                      <%= f.email_field :email, class: 'form-control' %>
+                      
+                      <%= f.label :所属 %>
+                      <%= f.text_field :affiliation, class: 'form-control' %>
+                      
+                      <%= f.label :社員番号 %>
+                      <%= f.text_field :uid, class: 'form-control' %>
+                      
+                      <%= f.label :カードID %>
+                      <%= f.text_field :cardID, class: 'form-control' %>
+                    
+                      <%= f.label :パスワード %>
+                      <%= f.password_field :password, class: 'form-control' %>
+                      
+                      <%= f.label :基本勤務時間 %>
+                      <%= f.time_field :basictime, class: 'form-control' %>
+                      
+                      <%= f.label :指定勤務開始時間 %>
+                      <%= f.time_field :workingtime, class: 'form-control' %>
+                      
+                      <%= f.label :指定勤務終了時間 %>
+                      <%= f.time_field :working_time_End, class: 'form-control' %>
+                      
+                      <%= f.hidden_field :id %>
+                    
+                      <%= f.submit "編集する", class: "btn btn-primary" %>
+                    <% end %>
+                  </li>
+                </ul>
               </li>
           </ul>
         </div>
