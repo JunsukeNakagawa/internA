@@ -82,7 +82,7 @@ class UsersController < ApplicationController
   end
   
   def employees_display
-    # @users = Work.where(day: Time.now, attendance_time: !nil, leaving_time: nil).select(activated: true)
+    @working_users = Work.where(day: Time.now, attendance_time: !nil, leaving_time: nil)
     # users.each do |user|
     #   @working_user = User.where(id: users.userid)
     # end

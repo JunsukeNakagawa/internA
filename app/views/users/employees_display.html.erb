@@ -6,17 +6,19 @@
 	<tbody>
 		<tr>
 			<td>社員番号</td>
-			<td>名前</td>
+			<td>名前<%= @working_users.count %></td>
 		</tr>
 	</tbody>
 </table>
+<% (1..@working_users.count).each do |user|%> 
 <table>
 	<tbody>
 		<tr>
-			<td></td>
+			<td><%= @working_users %></td>
 			<td></td>
 		</tr>
 	</tbody>
 </table>
+<% end %> 
 </body>
 </html>

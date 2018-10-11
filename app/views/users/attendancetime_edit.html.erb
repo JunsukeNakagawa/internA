@@ -64,7 +64,7 @@
 					<% if work.check_by_boss.nil? %>
 						<%= fi.select :check_by_boss, :include_blank => true %>
 					<% else %>
-						<%= fi.select :check_by_boss, work.check_by_boss %>
+						<%= fi.select :check_by_boss, :default => work.check_by_boss %>
 					<% end %>
 			</td>
 			<% end %>
