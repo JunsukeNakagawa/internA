@@ -1,24 +1,23 @@
-<!DOCTYPE html>
-<html>
-<body>
-出勤中社員一覧
+<% provide(:title, 'Attendance Users') %>
+<h1>出勤中社員一覧</h1>
+
 <table>
-	<tbody>
-		<tr>
-			<td>社員番号</td>
-			<td>名前<%= @working_users.count %></td>
-		</tr>
-	</tbody>
+  <thead>
+    <tr>
+      <th>社員番号</th>
+      <th>名前</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @working_users.each do |employee_number, name| %>
+      <tr>
+        <td>
+          <%= employee_number %>
+        </td>
+        <td>
+          <%= name %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
 </table>
-<% (1..@working_users.count).each do |user|%> 
-<table>
-	<tbody>
-		<tr>
-			<td><%= @working_users %></td>
-			<td></td>
-		</tr>
-	</tbody>
-</table>
-<% end %> 
-</body>
-</html>

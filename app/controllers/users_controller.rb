@@ -38,7 +38,8 @@ class UsersController < ApplicationController
       flash[:success] = "出社時間を登録しました"
       redirect_to user_path
     else
-      render("works/edit")
+      flash[:info] = "失敗しました。"
+      redirect_to root_url
     end
   end
   
@@ -49,7 +50,8 @@ class UsersController < ApplicationController
       flash[:success] = "退社時間を登録しました"
       redirect_to user_path
     else
-      render("works/edit")
+      flash[:info] = "失敗しました。"
+      redirect_to root_url
     end
   end
   
@@ -82,10 +84,16 @@ class UsersController < ApplicationController
   end
   
   def employees_display
-    @working_users = Work.where(day: Time.now, attendance_time: !nil, leaving_time: nil)
-    # users.each do |user|
-    #   @working_user = User.where(id: users.userid)
-    # end
+    @working_users = {}
+    User.all.each do |user|
+    if user.works.any?{|a|
+       ( a.day == Date.today &&
+         !a.attendance_time.blank? &&
+         a.leaving_time.blank? )
+        }
+     @working_users[user.uid] = user.name
+    end
+   end
   end
 
   def create
