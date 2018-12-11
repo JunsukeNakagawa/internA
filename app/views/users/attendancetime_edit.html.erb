@@ -27,11 +27,11 @@
 			<td>
 				<%= %w(日 月 火 水 木 金 土)[date.wday] %></td>
 			<td>
-				<% if Work.find_by(day: date, userid: current_user.id).nil? %>
-					<% work = Work.new(day: date, userid: current_user.id) %>
+				<% if Work.find_by(day: date, user_id: current_user.id).nil? %>
+					<% work = Work.new(day: date, user_id: current_user.id) %>
 					<% work.save %>
 				<% else %>
-					<% work = Work.find_by(day: date, userid: current_user.id) %>
+					<% work = Work.find_by(day: date, user_id: current_user.id) %>
 				<% end %>
 				<%= f.fields_for "works[]", work do |fi| %>
 					<% if work.attendance_time.nil? %>

@@ -24,7 +24,7 @@
 			<td>コード:<%= current_user.uid %></td>
 			<td></td>
 			<td>出勤日数 
-				<% working_days = Work.where(userid: params[:id] ,day: Time.new(@first_day.year,@first_day.month).all_month).select("leaving_time").count %>
+				<% working_days = Work.where(user_id: params[:id] ,day: Time.new(@first_day.year,@first_day.month).all_month).select("leaving_time").count %>
 				<%= working_days %>日
 			</td>
 			<td>締め <%=  @first_day.month %>/<%=  @last_day.day %></td>
@@ -87,11 +87,11 @@
 			<td>
 				<%= %w(日 月 火 水 木 金 土)[date.wday] %></td>
 			<td>
-				<% if Work.find_by(day: date, userid: current_user.id).nil? %>
-					<% work = Work.new(day: date, userid: current_user.id) %>
+				<% if Work.find_by(day: date, user_id: current_user.id).nil? %>
+					<% work = Work.new(day: date, user_id: current_user.id) %>
 					<% work.save %>
 				<% else %>
-					<% work = Work.find_by(day: date, userid: current_user.id) %>
+					<% work = Work.find_by(day: date, user_id: current_user.id) %>
 				<% end %>
 				<% attendance_hour = work.attendance_time.strftime("%H") if !work.attendance_time.nil? %>
 				<%= attendance_hour %>
@@ -136,7 +136,7 @@
 	<tbody>
 		<tr>
 			<td colspan="2">総合勤務時間</td>
-			<td colspan="2"><% workingTotaltime = Work.where(userid: params[:id] ,day: Time.new(@first_day.year,@first_day.month).all_month).select("leaving_time").count * basic_time if !basic_time.nil? %>
+			<td colspan="2"><% workingTotaltime = Work.where(user_id: params[:id] ,day: Time.new(@first_day.year,@first_day.month).all_month).select("leaving_time").count * basic_time if !basic_time.nil? %>
 				<%= sprintf("%.2f", BigDecimal((workingTotaltime).to_s).round(3).to_f )  %>時間</td>
 			<td></td>
 			<td></td>

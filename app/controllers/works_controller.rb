@@ -8,7 +8,7 @@ class WorksController < ApplicationController
   end
   
   def apply_overwork
-    @work = Work.find_by(day: params[:work][:day], userid: current_user.id)
+    @work = Work.find_by(day: params[:work][:day], user_id: current_user.id)
     if params[:work][:checkbox] == "true"
       date_tomorrow = time_change.tomorrow - 9.hours
       @work.update_attributes(apply_overwork_params)
@@ -36,4 +36,7 @@ class WorksController < ApplicationController
     Time.new(day.year,day.month,day.day,time.hour,time.min,time.sec)
   end
     
+
+
+
 end

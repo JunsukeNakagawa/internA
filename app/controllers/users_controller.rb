@@ -32,7 +32,7 @@ class UsersController < ApplicationController
   end
   
   def attend
-    @work = Work.find_by(day: Date.today, userid: current_user.id)
+    @work = Work.find_by(day: Date.today, user_id: current_user.id)
     @work.attendance_time = Time.new(Time.now.year,Time.now.month,Time.now.day,Time.new.hour,Time.now.min,00)
     if @work.save
       flash[:success] = "出社時間を登録しました"
@@ -44,7 +44,7 @@ class UsersController < ApplicationController
   end
   
   def leave
-    @work = Work.find_by(day: Date.today, userid: current_user.id)
+    @work = Work.find_by(day: Date.today, user_id: current_user.id)
     @work.leaving_time = Time.new(Time.now.year,Time.now.month,Time.now.day,Time.new.hour,Time.now.min,00)
     if @work.save
       flash[:success] = "退社時間を登録しました"
