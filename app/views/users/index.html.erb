@@ -4,7 +4,7 @@
 
 <%= form_tag({controller: "users", action: "import", method: "post"}, {multipart: true}) do %>
   <%= file_field_tag :file %>
-  <%= submit_tag "csvをインポート" %>
+  <%= submit_tag "csvをインポート" ,class: "btn btn-sm btn-primary" %>
 <% end %>
 
 <ul class="users">

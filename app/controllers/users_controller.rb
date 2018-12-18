@@ -137,8 +137,15 @@ class UsersController < ApplicationController
   end
   
   def import
-    Object.import(params[:file])
-    redirect_to users_url
+    # ファイルセットされていたら保存と結果のメッセージを取得して表示
+    if !params[:file].blank?
+      # 保存と結果のメッセージを取得して表示
+      message = User.import(params[:file])
+      flash[:notice] = message
+    else
+      flash[:error] = "CSVファイルを選択してください"
+    end
+    redirect_to users_path
   end
 
   private

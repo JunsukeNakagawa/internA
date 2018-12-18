@@ -101,12 +101,45 @@ class User < ApplicationRecord
   end
   
   def self.import(file)
-    CSV.foreach(file.path, headers: true) do |row|
-
-      obj = new
-      obj.attributes = row.to_hash.slice(*updatable_attributes)
-
-      obj.save!
+    # 登録ユーザ配列
+    new_users = []
+    # 重複id
+    overlap_id = []
+    
+    CSV.foreach(file.path, headers: true, encoding: 'Shift_JIS:UTF-8') do |row|
+      
+      # id重複する場合はその行のみカット
+      if exists?(id: row["id"])
+        overlap_id.push(row["id"])
+        next
+      end
+      
+      user = new(row.to_hash.slice(*updatable_attributes))
+      # パラメータに抜けがあれば全データ入力しない
+      if user.valid?
+        new_users.push(user)
+      else
+        return "id#{row["id"]}のデータに不備があったため入力失敗しました"
+      end
+    end
+    
+    # 可能なデータだけ保存
+    new_users.each do |user|
+      if !user.save
+        return "id#{user.id}のデータ保存時にエラーが発生しました"
+      end
+    end
+    
+    # 重複したidがあればメッセージに表示
+    if overlap_id.count == 0
+      return "アップデートが成功しました"
+    else
+      message = "id:"
+      overlap_id.each do |id|
+        message += "#{id},"
+      end
+      message += "は重複のため登録できませんでした"
+      return message
     end
   end
   
