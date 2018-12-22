@@ -37,4 +37,7 @@ Rails.application.routes.draw do
   resources :account_activations, only: [:edit]
   resources :password_resets,     only: [:new, :create, :edit, :update]
   resources :works
+  
+  # # CSV出力用
+  # get '/user_attendance_CSV_output', to: 'users#user_attendance_CSV_output', as: 'user_attendance_CSV_output' 
 end

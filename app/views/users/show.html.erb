@@ -24,8 +24,8 @@
 			<td>コード:<%= current_user.uid %></td>
 			<td></td>
 			<td>出勤日数 
-				<% working_days = Work.where(user_id: params[:id] ,day: Time.new(@first_day.year,@first_day.month).all_month).select("leaving_time").count %>
-				<%= working_days %>日
+				<% @working_days = Work.where(user_id: params[:id] ,day: Time.new(@first_day.year,@first_day.month).all_month).select("leaving_time").count %>
+				<%= @working_days %>日
 			</td>
 			<td>締め <%=  @first_day.month %>/<%=  @last_day.day %></td>
 		</tr>
@@ -40,7 +40,7 @@
 <br>
 <br>
 <%= link_to("勤怠編集", attendancetime_edit_path(first_day: @first_day), class: "btn btn-lg btn-primary") if session_user.admin? || current_user == session_user %>
-<%= link_to("CSV出力", attendancetime_edit_path(first_day: @first_day), class: "btn btn-lg btn-primary") if session_user.admin? || current_user == session_user %>
+<%= link_to "CSV出力", user_path(@work, params: { id: @user.id, first_day: @first_day, format: :csv}), :style=>"color:white;" ,class: "btn btn-lg btn-primary" if current_user == @user %>
 <%= link_to("勤怠修正ログ（承認済）", attendancetime_edit_path(first_day: @first_day), class: "btn btn-lg btn-primary") if session_user.admin? || current_user == session_user %>
 <br>
 <br>
@@ -78,7 +78,7 @@
 	<tbody>
 		<tr>
 			<td>
-				<button class="btn btn-primary" data-toggle="modal" data-target="#modal" data-date="<%=date.month%>/<%=date.day%>"
+				<button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal" data-date="<%=date.month%>/<%=date.day%>"
 									data-date_1="<%=date.year%>-<%=date.month%>-<%=date.day%>" data-day="<%= %w(日 月 火 水 木 金 土)[date.wday]%>">
                 残業申請
         </button>

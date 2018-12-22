@@ -1,5 +1,3 @@
-require 'csv'
-
 class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :edit, :update, :destroy]
   before_action :show_user, only: [:show, :attendancetime_edit, :attendancetime_update]
@@ -24,7 +22,37 @@ class UsersController < ApplicationController
     else
       @first_day = Date.new(Date.today.year, Date.today.month)
     end
+    # 曜日表示用に使用する
+    @youbi = %w[日 月 火 水 木 金 土]
+    # 基本情報取得
+    # @basic_info = BasicInfo.find_by(id: 1)
+    # 表示月があれば取得する
+    if !params[:first_day].nil?
+      @first_day = Date.parse(params[:first_day])
+    else
+      # ないなら今月分を表示する
+      @first_day = Date.new(Date.today.year, Date.today.month, 1)
+    end
     @last_day = @first_day.end_of_month
+    # 表示期間の勤怠データを日付順にソートして取得
+    @works = @user.works.where('day >= ? and day <= ?', @first_day, @last_day).order("day ASC")
+    # 出勤日数を取得
+    @working_days = @works.where.not(attendance_time: nil, leaving_time: nil).count
+
+    # 在社時間の総数を取得
+    @work_sum = 0
+    @works.where.not(attendance_time: nil, leaving_time: nil).each do |work|
+      @work_sum += work.leaving_time - work.attendance_time
+    end
+    @work_sum /= 3600
+
+    # CSV出力ファイル名を指定
+    respond_to do |format|
+      format.html
+      format.csv do
+        user_attendance_CSV_output
+      end
+    end
   end
 
   def new
@@ -161,6 +189,39 @@ class UsersController < ApplicationController
     
     def works_params
       params.require(:work).permit(works: [:attendance_time, :leaving_time])[:works]
+    end
+    
+    def user_attendance_CSV_output
+      csv_str = CSV.generate do |csv|
+        # ユーザ情報のヘッダー
+        csv << ["#{@first_day.strftime("%Y年%m月")}　時間管理表"]
+        csv << ["名前", @user.name, "所属", @user.affiliation, "コード", @user.uid, "出勤日数", "#{@working_days}日"]
+        # 改行
+        csv << [""]
+        
+        # 勤怠情報のヘッダー
+        csv_column_names = %w(日付 曜日 出社時間 退社時間 在社時間 備考 指示者)
+        csv << csv_column_names
+        @works.each do |attendance|
+          # 出社時間
+          !attendance.attendance_time.nil? ? attendance_time = attendance.attendance_time.strftime("%H:%M") : attendance_time = "";
+          # 退社時間
+          !attendance.leaving_time.nil? ? leaving_time = attendance.leaving_time.strftime("%H:%M") : leaving_time = "";
+          # 在社時間
+          !attendance.attendance_time.nil? && !attendance.leaving_time.nil? ? work_sum = format("%.2f", (attendance.leaving_time - attendance.attendance_time)/3600) : work_sum = "";
+          
+          csv_column_values = [
+            attendance.day.strftime("%m/%d"),
+            @youbi[attendance.day.wday],
+            attendance_time,
+            leaving_time,
+            work_sum,
+            attendance.remarks,
+          ]
+          csv << csv_column_values
+        end
+      end
+      send_data(csv_str, filename: "#{@first_day.strftime("%Y年%m月")}_#{@user.name}.csv", type: :csv)
     end
     
     # beforeアクション
