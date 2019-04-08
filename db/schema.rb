@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181208070037) do
+ActiveRecord::Schema.define(version: 20190114064539) do
+
+  create_table "one_month_attendances", force: :cascade do |t|
+    t.integer "application_user_id"
+    t.integer "authorizer_user_id"
+    t.date "application_date"
+    t.integer "application_state", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "name"
@@ -32,6 +41,7 @@ ActiveRecord::Schema.define(version: 20181208070037) do
     t.integer "uid"
     t.boolean "superior"
     t.integer "cardID"
+    t.integer "applied_last_time_user_id"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
@@ -49,6 +59,15 @@ ActiveRecord::Schema.define(version: 20181208070037) do
     t.boolean "checkbox"
     t.text "work_description"
     t.integer "check_by_boss"
+    t.integer "authorizer_user_id"
+    t.integer "application_state"
+    t.text "overtime_work"
+    t.datetime "edited_work_start"
+    t.datetime "edited_work_end"
+    t.integer "application_edit_state"
+    t.integer "authorizer_user_id_of_attendance"
+    t.datetime "before_edited_work_start"
+    t.datetime "before_edited_work_end"
   end
 
 end

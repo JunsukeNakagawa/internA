@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   post  "users/:id/update", to: "users#update"
   patch  "users/:id/update", to: "users#update"
   post  "users/:id/timeupdate", to: "users#timeupdate"
+  get  "users/:id/csv_output", to: "users#csv_output" , as: 'csv_output'
   get  "/employees_display", to: "users#employees_display" , as: 'employees_display'
   
   get    '/signup',  to: 'users#new'
@@ -23,6 +24,15 @@ Rails.application.routes.draw do
   
   patch '/works/:id/apply_overwork' , to: 'works#apply_overwork'
   patch '/works/:id/apply_attendance' , to: 'works#apply_attendance'
+  
+  # 1ヵ月分勤怠の確認申請関係
+  post '/users/onemonth', to: 'users#onemonth_application', as: 'onemonth_application'
+  post '/work/update_onemonth', to: 'work#update_onemonth_applied_attendance', as: 'update_onemonth_applied_attendance'
+  
+  # 残業申請関係
+  get '/work/overtime', to: 'work#edit_overtime', as: 'edit_overtime_attendance'
+  post '/work/overtime', to: 'work#overtime_application', as: 'overtime_application'
+  post '/work/one_overtime', to: 'work#one_overtime_application', as: 'one_overtime_application'
   
   get 'password_resets/new'
   get 'password_resets/edit'
@@ -38,6 +48,6 @@ Rails.application.routes.draw do
   resources :password_resets,     only: [:new, :create, :edit, :update]
   resources :works
   
-  # # CSV出力用
-  # get '/user_attendance_CSV_output', to: 'users#user_attendance_CSV_output', as: 'user_attendance_CSV_output' 
+  # CSV出力用
+  get '/user_attendance_output', to: 'users#user_attendance_output', as: 'user_attendance_output' 
 end

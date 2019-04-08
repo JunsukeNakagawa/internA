@@ -4,19 +4,25 @@ class UsersController < ApplicationController
   before_action :correct_user,   only: [:edit, :update]
   before_action :admin_user,     only: [:destroy, :timeupdate ]
   
+  require 'csv'
+  
   def index
     @users = User.where(activated: true).paginate(page: params[:page]).search(params[:search])
     @user = User.new
   end
   
   def show
-    @work = Work.find_by(id: params[:id])
-   if logged_in?
-     @user = current_user
-   end
-   if @work.nil?
-    @work = Work.new
-   end
+    if current_user.admin?
+      redirect_to :action => 'index'
+    end
+    
+    if logged_in?
+      @user = current_user
+    end
+   
+    if @work.nil?
+      @work = Work.new
+    end
     if !params[:first_day].nil?
       @first_day = Date.parse(params[:first_day])
     else
@@ -43,18 +49,105 @@ class UsersController < ApplicationController
     @work_sum = 0
     @works.where.not(attendance_time: nil, leaving_time: nil).each do |work|
       @work_sum += work.leaving_time - work.attendance_time
+      # 自分に申請中の残業一覧を取得
+      @attendances_over = @works.where.not(scheduled_end_time: nil, authorizer_user_id: nil)
     end
     @work_sum /= 3600
+    
+        # 上長ユーザを全取得 @note 自分以外の上長を取得
+    ids = [@user.applied_last_time_user_id]
+    User.where.not(id: @user.id, superior: false).each {|s| ids.push(s.id) if s.id != @user.applied_last_time_user_id }
+    @superior_users = ids.collect {|id| User.where.not(id: @user.id, superior: false).detect {|x| x.id == id.to_i}}.compact
+    
+    # 自身の所属長承認状態取得
+    @one_month_attendance = OneMonthAttendance.find_by(application_user_id: @user.id, application_date: @first_day)
+    # 申請用に新規作成
+    @new_one_month_attendance = OneMonthAttendance.new(application_user_id: @user.id)
+
+    # 自分に申請中の勤怠編集一覧を取得
+    @edit_applications_to_me = Work.where(authorizer_user_id_of_attendance: @user.id, application_edit_state: :applying1)
+    # 存在しないuserは除外
+    @edit_applications_to_me = @edit_applications_to_me.select{ |x| !User.find_by(id: x.user_id).nil? }
+    # 名前ごとに分類
+    @edit_applications = @edit_applications_to_me.group_by do |application|
+      User.find_by(id: application.user_id).name
+    end
+
+    # 承認済みの勤怠編集一覧を取得
+    @edit_log_applications = Work.where(user_id: @user.id, application_edit_state: :approval2)
+    # 名前ごとに分類
+    @edit_log_applications = @edit_log_applications.group_by do |application|
+      User.find_by(id: application.user_id).name
+    end
+
+    # 自分に申請中の残業一覧を取得
+    @applications_to_me = Work.where(authorizer_user_id: @user.id, application_state: :applying)
+    # 存在しないuserは除外
+    @applications_to_me = @applications_to_me.select{ |x| !User.find_by(id: x.user_id).nil? }
+    # 名前ごとに分類
+    @overtime_applications = @applications_to_me.group_by do |application|
+      User.find_by(id: application.user_id).name
+    end
+
+    # 所属長承認の情報取得
+    @one_month_applications_to_me = OneMonthAttendance.where(authorizer_user_id: @user.id, application_state: :applying)
+    # 存在しないuserは除外
+    @one_month_applications_to_me = @one_month_applications_to_me.select{ |x| !User.find_by(id: x.application_user_id).nil? }
+    # 名前ごとに分類
+    @one_month_applications = @one_month_applications_to_me.group_by do |application|
+      User.find_by(id: application.application_user_id).name
+    end
 
     # CSV出力ファイル名を指定
     respond_to do |format|
       format.html
       format.csv do
-        user_attendance_CSV_output
+        attendance_CSV_output
       end
     end
   end
+  
+  def csv_output
+    @user = User.new
+  end
+  
+  def user_attendance_output
+    @user = User.find(params[:id])
+    # 曜日表示用に使用する
+    @youbi = %w[日 月 火 水 木 金 土]
+    # 基本情報取得
+    # @basic_info = BasicInfo.find_by(id: 1)
+    # 表示月があれば取得する
+    if !params[:first_day].nil?
+      @first_day = Date.parse(params[:first_day])
+    else
+      # ないなら今月分を表示する
+      @first_day = Date.new(Date.today.year, Date.today.month, 1)
+    end
+    @last_day = @first_day.end_of_month
+    # 表示期間の勤怠データを日付順にソートして取得
+    @works = @user.works.where('day >= ? and day <= ?', @first_day, @last_day).order("day ASC")
+    # 出勤日数を取得
+    @working_days = @works.where.not(attendance_time: nil, leaving_time: nil).count
 
+    # 在社時間の総数を取得
+    @work_sum = 0
+    @works.where.not(attendance_time: nil, leaving_time: nil).each do |work|
+      @work_sum += work.leaving_time - work.attendance_time
+      # 自分に申請中の残業一覧を取得
+      @attendances_over = @works.where.not(scheduled_end_time: nil, authorizer_user_id: nil)
+    end
+    @work_sum /= 3600
+
+    # CSV出力ファイル名を指定
+    respond_to do |format|
+      # format.html
+      format.csv do
+        send_data render_to_string, filename: "#{@first_day.strftime("%Y年%m月")}_#{@user.name}.csv", type: :csv
+      end
+    end
+  end
+  
   def new
     @user = User.new
   end
@@ -191,7 +284,7 @@ class UsersController < ApplicationController
       params.require(:work).permit(works: [:attendance_time, :leaving_time])[:works]
     end
     
-    def user_attendance_CSV_output
+    def attendance_CSV_output
       csv_str = CSV.generate do |csv|
         # ユーザ情報のヘッダー
         csv << ["#{@first_day.strftime("%Y年%m月")}　時間管理表"]
