@@ -27,12 +27,12 @@ Rails.application.routes.draw do
   
   # 1ヵ月分勤怠の確認申請関係
   post '/users/onemonth', to: 'users#onemonth_application', as: 'onemonth_application'
-  post '/work/update_onemonth', to: 'work#update_onemonth_applied_attendance', as: 'update_onemonth_applied_attendance'
+  post '/works/update_onemonth', to: 'works#update_onemonth_applied_attendance', as: 'update_onemonth_applied_attendance'
   
   # 残業申請関係
-  get '/work/overtime', to: 'work#edit_overtime', as: 'edit_overtime_attendance'
-  post '/work/overtime', to: 'work#overtime_application', as: 'overtime_application'
-  post '/work/one_overtime', to: 'work#one_overtime_application', as: 'one_overtime_application'
+  get '/works/overtime', to: 'works#edit_overtime', as: 'edit_overtime_attendance'
+  post '/works/overtime', to: 'works#overtime_application', as: 'overtime_application'
+  post '/works/one_overtime', to: 'works#one_overtime_application', as: 'one_overtime_application'
   
   get 'password_resets/new'
   get 'password_resets/edit'

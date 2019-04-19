@@ -23,6 +23,32 @@ User.create!(name:  "上長1",
             basictime: Time.new(Time.now.year,Time.now.month,Time.now.day,00,00,00) ,
             activated: true,
             activated_at: Time.zone.now)
+            
+User.create!(name:  "上長2",
+            email: "example2@railstutorial.org",
+            affiliation: "上長2",
+            password:              "foobar",
+            password_confirmation: "foobar",
+            uid: 1235,
+            admin:     false,
+            superior: true,
+            workingtime: Time.new(Time.now.year,Time.now.month,Time.now.day,00,00,00),
+            basictime: Time.new(Time.now.year,Time.now.month,Time.now.day,00,00,00) ,
+            activated: true,
+            activated_at: Time.zone.now)
+
+User.create!(name:  "上長3",
+            email: "example3@railstutorial.org",
+            affiliation: "上長3",
+            password:              "foobar",
+            password_confirmation: "foobar",
+            uid: 1236,
+            admin:     false,
+            superior: true,
+            workingtime: Time.new(Time.now.year,Time.now.month,Time.now.day,00,00,00),
+            basictime: Time.new(Time.now.year,Time.now.month,Time.now.day,00,00,00) ,
+            activated: true,
+            activated_at: Time.zone.now)
 
 50.times do |n|
 #   Faker::Config.locale = :ja

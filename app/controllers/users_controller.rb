@@ -268,6 +268,48 @@ class UsersController < ApplicationController
     end
     redirect_to users_path
   end
+  
+  # 1ヵ月分の勤怠申請
+  def onemonth_application
+    @user = User.find_by(id: params[:one_month_attendance][:application_user_id])
+    
+    # 申請先が空なら何もしない
+    if params[:one_month_attendance][:authorizer_user_id].blank?
+      flash[:danger] = "所属長承認の申請宛先指定が空です"
+      redirect_to user_url(@user, params: { id: @user.id, first_day: params[:one_month_attendance][:first_day] })
+      return
+    end
+    
+    # 更新ユーザが見つからない場合はホームへ戻る
+    if @user.nil?
+      flash[:error] = "自分のアカウントが見つかりませんでした"
+      redirect_to(root_url)
+      return
+    end
+
+    @one_month_attendance = OneMonthAttendance.find_by(application_user_id: params[:one_month_attendance][:application_user_id], application_date: params[:one_month_attendance][:application_date])
+    # データがないなら新規作成
+    if @one_month_attendance.nil?
+      @one_month_attendance = OneMonthAttendance.new(one_month_attendance_params)
+      if !@one_month_attendance.save
+        flash[:error] = "所属長承認の申請に失敗しました"
+        redirect_to user_url(@user, params: { id: @user.id, first_day: params[:one_month_attendance][:first_day] })
+        return
+      end
+    else
+      if !@one_month_attendance.update_attributes(one_month_attendance_params)
+        flash[:error] = "所属長承認の申請に失敗しました"
+        redirect_to user_url(@user, params: { id: @user.id, first_day: params[:one_month_attendance][:first_day] })
+        return
+      end
+    end
+
+    @one_month_attendance.applying!
+    # 申請者の番号も保持
+    @user.update_attributes(applied_last_time_user_id: @one_month_attendance.authorizer_user_id)
+    flash[:success] = "所属長承認申請しました"
+    redirect_to user_url(@user, params: { id: @user.id, first_day: params[:one_month_attendance][:first_day] })
+  end
 
   private
 
@@ -282,6 +324,10 @@ class UsersController < ApplicationController
     
     def works_params
       params.require(:work).permit(works: [:attendance_time, :leaving_time])[:works]
+    end
+    
+    def one_month_attendance_params
+      params.require(:one_month_attendance).permit(:application_user_id, :authorizer_user_id, :application_date, :application_state)
     end
     
     def attendance_CSV_output

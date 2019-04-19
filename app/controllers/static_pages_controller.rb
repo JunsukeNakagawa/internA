@@ -11,8 +11,8 @@ class StaticPagesController < ApplicationController
      @user  = current_user 
    end
 	
-   if @attendance.nil?
-     @attendance = Attendance.new(day: Date.current)
+   if @work.nil?
+     @work = Work.new(day: Date.current)
    end
 
     # 表示月があれば取得

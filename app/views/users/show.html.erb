@@ -77,22 +77,22 @@
  <table>
 	<tbody>
 		<tr>
-			<td>
-				<button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal" data-date="<%=date.month%>/<%=date.day%>"
-									data-date_1="<%=date.year%>-<%=date.month%>-<%=date.day%>" data-day="<%= %w(日 月 火 水 木 金 土)[date.wday]%>">
-                残業申請
-        </button>
-				<%= render 'works/modal_overwork_application' %></td>
-			<td><%= @first_day.month %>/<%= date.day %></td>
-			<td>
-				<%= %w(日 月 火 水 木 金 土)[date.wday] %></td>
-			<td>
-				<% if Work.find_by(day: date, user_id: current_user.id).nil? %>
+			<% if Work.find_by(day: date, user_id: current_user.id).nil? %>
 					<% work = Work.new(day: date, user_id: current_user.id) %>
 					<% work.save %>
 				<% else %>
 					<% work = Work.find_by(day: date, user_id: current_user.id) %>
 				<% end %>
+			<td class="table-body">
+            <div class="inline-applicatioins">
+              <%  if current_user == @user %>
+                <a style="color:white; " class= "btn btn-sm btn-primary" href="#test-application<%= work.id %>" data-effect="mfp-zoom-in">残業申請</a>
+              <% end %>
+            </div>
+          </td>
+      <td class="table-body"><%= work.day.month %>/<%= work.day.day %></td>
+			<td><%= %w(日 月 火 水 木 金 土)[date.wday] %></td>
+			<td>
 				<% attendance_hour = work.attendance_time.strftime("%H") if !work.attendance_time.nil? %>
 				<%= attendance_hour %>
 				</td>
@@ -123,11 +123,10 @@
 					<% office_time = work.leaving_time - work.attendance_time %>
 					<% office_time_total += office_time %>
 				<% end %>
-				</td>
+			</td>
 			<td><%= work.scheduled_end_time.hour if !work.scheduled_end_time.nil? %></td>
 			<td><%= work.scheduled_end_time.min if !work.scheduled_end_time.nil? %></td>
 			<td><%= work.work_description if !work.work_description.nil? %></td>
-			<!--<td><%= work.authorizer_user_id if !work.authorizer_user_id.nil? %></td>-->
 			<td class="table-body">
             <% if work.applying? %>
               残業申請中
@@ -163,18 +162,124 @@
 			<td></td>
 			<td></td>
 			<td></td>
-			<td rowspan="1" colspan="2">所属長承認　未
-			<%= form_tag({:controller => 'works', :action => 'apply_attendance'}, {:method => :patch}) do %>
-				<%= fields_for @work do |f| %>
-	      	<%= f.select :check_by_boss, [["上長A", "上長A"],["上長B", "上長B"],["上長C", "上長C"]], {prompt: ""},{required: true} %>
-	      	<%= submit_tag "申請", class: "btn btn-primary" %>
-	      <% end %>
-	    <% end %>
+			<td class="table-body">所属長承認　
+        <% if @one_month_attendance.blank? || @one_month_attendance.authorizer_user_id.blank? %>
+          未
+        <% elsif @one_month_attendance.applying? %>
+          <%= User.find_by(id: @one_month_attendance.authorizer_user_id).name %>へ申請中
+        <% elsif @one_month_attendance.approval? %>
+          <%= User.find_by(id: @one_month_attendance.authorizer_user_id).name %>から承認済
+        <% elsif @one_month_attendance.denial? %>
+          <%= User.find_by(id: @one_month_attendance.authorizer_user_id).name %>から否認
+        <% end %>
+        <% if current_user == @user  %>
+          <%= form_for(@new_one_month_attendance, url: onemonth_application_url, :html => {:class => "one-month-attendance-form"}) do |f| %>
+            <%= f.hidden_field :application_user_id, :value => "#{@user.id}"%>
+            <%= f.hidden_field :application_date, :value => "#{@first_day}"%>
+            <%= f.hidden_field :first_day, :value => "#{@first_day}"%>
+            <%= f.collection_select :authorizer_user_id, @superior_users, :id, :name, {:include_blank => true, :selected => 0}, {:class => "form-control one-month-attendance"} %>
+            <%= f.submit "申請", class: "btn btn-lg btn-primary" %>
+          <% end %>
+        <% end %>
       </td>
 		</tr>
 	</tbody>
 	</table>
 	<% end %>
 <% end %>
+<% @works.each do |work| %>
+  <div id="test-application<%= work.id %>" class="white-popup mfp-with-anim mfp-hide">
+    <h4 align="center">【残業申請】</h4>
+    <%= form_for(work, url: one_overtime_application_path, method: :post ) do |f| %>
+      <%= f.hidden_field :id, :value => work.id %>
+      <%= f.hidden_field :user_id, :value => @user.id %>
+      <%= f.hidden_field :first_day, :value => @first_day %>
+      <table class="txt1 table table-bordered table-striped table-condensed table-status">
+        <thead>
+          <tr>
+            <th class="table-header">日付</th>
+            <th class="table-header">曜日</th>
+            <th class="table-header">終了予定時間</th>
+            <th class="table-header">翌日</th>
+            <th class="table-header">業務処理内容</th>
+            <th class="table-header">指示者確認㊞</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="table-body"><%= work.day.month %>/<%= work.day.day %></td>
+            <td class="table-body"><%= @youbi[work.day.wday] %></td>
+            <!-- 終了予定時間の表示  -->
+            <td class="table-body">
+              <%= f.datetime_select :scheduled_end_time, {discard_year: true, discard_month: true, discard_day: true, include_blank: true}, {class: "form-control bootstrap-date-only-width scheduled_end_time"} %>
+            </td>
+            <!-- 翌日のチェックボックスの表示  -->
+            <td class="table-body">
+              <%= check_box_tag :check %>
+            </td>
+            <!-- 業務処理内容の表示  -->
+            <td class="table-body">
+              <%= f.text_field :work_description, class: 'form-control'%>
+            </td>
+            <!-- 指示者確認㊞の表示  -->
+            <td class="table-body">
+              <% if !work.authorizer_user_id.blank? && !User.find_by(id: work.authorizer_user_id).blank? %>
+                <% if work.applying? %>
+                  <%= User.find_by(id: work.authorizer_user_id).name %>へ申請中
+                <% elsif work.approval? %>
+                  <%= User.find_by(id: work.authorizer_user_id).name %>から承認済
+                <% elsif work.denial? %>
+                  <%= User.find_by(id: work.authorizer_user_id).name %>から否認
+                <% else %>
+                <% end %>
+              <% end %>
+              <%= f.collection_select :authorizer_user_id, @superior_users, :id, :name, {:include_blank => true, :selected => 0}, {:class => "form-control authorizer_user_id"} %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <%= f.submit "変更を送信する", class: "btn btn-lg btn-primary" %>
+    <% end %>
+  </div>
+<% end %>
 </body>
 </html>
+
+<script>
+  // モーダル表示用JQuery
+  $('.inline-applicatioins').magnificPopup({
+    delegate: 'a',
+    removalDelay: 500,
+    callbacks: {
+      beforeOpen: function() {
+         this.st.mainClass = this.st.el.attr('data-effect');
+      },
+    },
+  });
+  
+  // 残業申請の空チェック
+  $(function() {
+    $('form').submit(function() {
+      // 申請日に時間空白あれば未記入の警告を表示する
+      // const $trs = $('tbody').find('tr').toArray();
+      // var isOverTimeBlank = $trs.some(function( tr ) {
+      //   var edited_work_start = $(tr).find('.edited_work_start').val();
+      //   var edited_work_end = $(tr).find('.edited_work_end').val();
+      //   var authorizer_user_id_of_attendance = $(tr).find('.authorizer_user_id_of_attendance').val();
+      //   return ((edited_work_start === '' || edited_work_end === '') && authorizer_user_id_of_attendance !== '')
+      // });
+      // if (isOverTimeBlank) {
+      //   alert("終了予定時間が空です");
+      //   return false;
+      // }
+    });
+  
+    // 所属長承認申請の空チェック
+    // $('.one-month-attendance-form').submit(function() {
+    //   if ($('.one-month-attendance').val() === "") {
+    //     alert("所属長承認申請の申請者が空です");
+    //     return false;
+    //   }
+    // });
+  });
+</script>
