@@ -60,13 +60,20 @@
 						<%= fi.text_field :work_description, :default => work.work_description %>
 					<% end %>
 			</td>
-			<td>
-					<% if work.check_by_boss.nil? %>
-						<%= fi.select :check_by_boss, :include_blank => true %>
-					<% else %>
-						<%= fi.select :check_by_boss, :default => work.check_by_boss %>
-					<% end %>
-			</td>
+			<!-- 指示者確認㊞の表示  -->
+        <td class="table-body">
+          <% if !work.authorizer_user_id_of_attendance.blank? && !User.find_by(id: work.authorizer_user_id_of_attendance).blank? %>
+            <% if work.applying1? %>
+              <%= User.find_by(id: work.authorizer_user_id_of_attendance).name %>へ申請中
+            <% elsif work.approval2? %>
+              <%= User.find_by(id: work.authorizer_user_id_of_attendance).name %>から承認済
+            <% elsif work.denial3? %>
+              <%= User.find_by(id: work.authorizer_user_id_of_attendance).name %>から否認
+            <% else %>
+            <% end %>
+          <% end %>
+          <%= fi.collection_select :authorizer_user_id_of_attendance, @superior_users, :id, :name, {:include_blank => true, :selected => 0}, {:class => "form-control authorizer_user_id_of_attendance"} %>
+        </td>
 			<% end %>
 		</tr>
 	</tbody>

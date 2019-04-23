@@ -16,6 +16,13 @@ Rails.application.routes.draw do
   get  "users/:id/csv_output", to: "users#csv_output" , as: 'csv_output'
   get  "/employees_display", to: "users#employees_display" , as: 'employees_display'
   
+    # ユーザ関係
+  resources :users do
+    collection { post :import }
+  end
+  
+  get '/show_confirm', to: 'users#show_confirm', as: 'show_confirm'
+  
   get    '/signup',  to: 'users#new'
   post "signup", to: "users#create"
   get    '/login',   to: 'sessions#new'
@@ -30,17 +37,13 @@ Rails.application.routes.draw do
   post '/works/update_onemonth', to: 'works#update_onemonth_applied_attendance', as: 'update_onemonth_applied_attendance'
   
   # 残業申請関係
+  get '/work', to: 'work#edit', as: 'edit_attendance'
   get '/works/overtime', to: 'works#edit_overtime', as: 'edit_overtime_attendance'
   post '/works/overtime', to: 'works#overtime_application', as: 'overtime_application'
   post '/works/one_overtime', to: 'works#one_overtime_application', as: 'one_overtime_application'
   
   get 'password_resets/new'
   get 'password_resets/edit'
-  resources :users do
-    member do
-      get :following, :followers
-    end
-  end
   resources :users, only: :index do
     collection { post :import }
   end

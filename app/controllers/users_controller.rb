@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :edit, :update, :destroy]
-  before_action :show_user, only: [:show, :attendancetime_edit, :attendancetime_update]
+  # before_action :show_user, only: [:show, :attendancetime_edit, :attendancetime_update]
   before_action :correct_user,   only: [:edit, :update]
   before_action :admin_user,     only: [:destroy, :timeupdate ]
   
@@ -54,7 +54,7 @@ class UsersController < ApplicationController
     end
     @work_sum /= 3600
     
-        # 上長ユーザを全取得 @note 自分以外の上長を取得
+    # 上長ユーザを全取得 @note 自分以外の上長を取得
     ids = [@user.applied_last_time_user_id]
     User.where.not(id: @user.id, superior: false).each {|s| ids.push(s.id) if s.id != @user.applied_last_time_user_id }
     @superior_users = ids.collect {|id| User.where.not(id: @user.id, superior: false).detect {|x| x.id == id.to_i}}.compact
@@ -105,6 +105,11 @@ class UsersController < ApplicationController
         attendance_CSV_output
       end
     end
+  end
+  
+  def show_confirm
+    @user = User.find(params[:id])
+    redirect_to user_url(@user, params: { id: @user.id, first_day: params[:first_day] })
   end
   
   def csv_output
@@ -181,7 +186,11 @@ class UsersController < ApplicationController
   end
   
   def attendancetime_edit
+    if current_user.admin?
+      redirect_to :action => 'index'
+    end
     @user = User.find(params[:id])
+    
     @first_day = params[:first_day].to_datetime
     if @work.nil?
       @work = Work.new
@@ -192,6 +201,22 @@ class UsersController < ApplicationController
       @first_day = Date.new(Date.today.year, Date.today.month)
     end
     @last_day = @first_day.end_of_month
+    # 上長ユーザを全取得
+    ids = [@user.applied_last_time_user_id]
+    User.where.not(id: @user.id, superior: false).each {|s| ids.push(s.id) if s.id != @user.applied_last_time_user_id }
+    @superior_users = ids.collect {|id| User.where.not(id: @user.id, superior: false).detect {|x| x.id == id.to_i}}.compact
+    
+    # 期間分のデータチェック
+    (@first_day..@last_day).each do |date|
+      # 該当日付のデータがないなら作成する
+      if !@user.works.any? {|attendance| attendance.day == date }
+        attend = Work.create(user_id: @user.id, day:date)
+        attend.save
+      end
+    end
+    
+    # 表示期間の勤怠データを日付順にソートして取得
+    @attendances = @user.works.where('day >= ? and day <= ?', @first_day, @last_day).order("day ASC")
   end
   
   def attendancetime_update

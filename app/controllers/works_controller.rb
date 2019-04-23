@@ -7,15 +7,49 @@ class WorksController < ApplicationController
     @work = Work.find_by(id: params[:id])
   end
   
+  def edit
+    if current_user.admin?
+      redirect_to :action => 'index'
+    end
+    @user = User.find(params[:id])
+    # 曜日表示用に使用する
+    @youbi = %w[日 月 火 水 木 金 土]
+    # 上長ユーザを全取得
+    ids = [@user.applied_last_time_user_id]
+    User.where.not(id: @user.id, superior: false).each {|s| ids.push(s.id) if s.id != @user.applied_last_time_user_id }
+    @superior_users = ids.collect {|id| User.where.not(id: @user.id, superior: false).detect {|x| x.id == id.to_i}}.compact
+    
+    # 表示月があれば取得する
+    if !params[:first_day].nil?
+      @first_day = Date.parse(params[:first_day])
+    else
+      # ないなら今月分を表示する
+      @first_day = Date.new(Date.today.year, Date.today.month, 1)
+    end
+    @last_day = @first_day.end_of_month
+    
+    # 期間分のデータチェック
+    (@first_day..@last_day).each do |date|
+      # 該当日付のデータがないなら作成する
+      if !@user.attendances.any? {|attendance| attendance.day == date }
+        attend = Attendance.create(user_id: @user.id, day:date)
+        attend.save
+      end
+    end
+    
+    # 表示期間の勤怠データを日付順にソートして取得
+    @attendances = @user.attendances.where('day >= ? and day <= ?', @first_day, @last_day).order("day ASC")
+  end
+  
   # 残業を申請する
   def overtime_application
     @user = User.find(params[:id])
     
     # 変更チェックが1つ以上で各残業申請情報を更新
-    if !params[:checkbox].blank?
-      params[:work].each do |id, item|
+    if !params[:check].blank?
+      params[:attendance].each do |id, item|
         # 更新チェックがなければ何もしない
-        if !params[:checkbox].include?(id)
+        if !params[:check].include?(id)
           next
         end
         
