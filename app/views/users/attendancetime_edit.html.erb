@@ -12,13 +12,14 @@
 			<td rowspan="2">曜日</td>
 			<td colspan="3">出社</td>
 			<td colspan="3">退社</td>
+			<th class="">翌日</th>
 			<td rowspan="2">在社時間</td>
 			<td rowspan="2">備考</td>
 			<td rowspan="2">指示書確認㊞</td>
 		</tr>
 	</tbody>
 </table>
-<%= form_for @work, :url => {:action => 'attendancetime_update'}, method: "patch" do |f| %>
+<%= form_for @work, :url => {:action => 'attendancetime_update'}, method: "patch" do %>
 <% (@first_day..@last_day).each do |date|%> 
  <table>
 	<tbody>
@@ -33,26 +34,33 @@
 				<% else %>
 					<% work = Work.find_by(day: date, user_id: current_user.id) %>
 				<% end %>
-				<%= f.fields_for "works[]", work do |fi| %>
-					<% if work.attendance_time.nil? %>
+				<%= fields_for "works[]", work do |fi| %>
+					<% if work.applying1? %>
+						<%= fi.time_field :edited_work_start %>
+					<% elsif work.attendance_time.nil? %>
 						<%= fi.time_field :attendance_time, :include_blank => true %>
 					<% else %>
 						<%= fi.time_field :attendance_time, :default => work.attendance_time %>
 					<% end %>
 					</td>
 				<td>
-					<% if work.leaving_time.nil? %>
+					<% if work.applying1? %>
+						<%= fi.time_field :edited_work_end %>
+					<% elsif work.leaving_time.nil? %>
 						<%= fi.time_field :leaving_time, :include_blank => true %>
 					<% else %>
 						<%= fi.time_field :leaving_time, :default => work.leaving_time %>
 					<% end %>
 			</td>
+			<td class="">
+      	<%= check_box_tag 'check[]', work.day %>
+      </td>
 			<td>
 				<% if !work.attendance_time.nil? && !work.leaving_time.nil? %>
 					<% officeTimeDay = BigDecimal(((work.leaving_time - work.attendance_time)/60/60).to_s).round(3).to_f %>
 					<%= sprintf("%.2f", officeTimeDay ) %>時間
 				<% end %>
-				</td>
+			</td>
 			<td>
 					<% if work.work_description.nil? %>
 						<%= fi.text_field :work_description, :include_blank => true %>
@@ -80,7 +88,7 @@
 </table>
 <% end %>
 <br>
-<%= f.submit "保存", class: "btn btn-lg btn-primary" %>
+<%= submit_tag "保存", class: "btn btn-lg btn-primary" %>
 <% end %>
 <br>
 <%= link_to("キャンセル", user_path , class: "btn btn-lg btn-primary") %>

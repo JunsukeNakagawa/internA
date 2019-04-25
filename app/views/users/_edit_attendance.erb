@@ -55,21 +55,21 @@
                   <!-- 出社 -->
                   <!-- 時 -->
                   <td class="table-body">
-                    <%= attendance.work_start.hour if !attendance.work_start.blank? %>
+                    <%= attendance.attendance_time.hour if !attendance.attendance_time.blank? %>
                   </td>
                   <!-- 分 -->
                   <td class="table-body">
-                    <%= attendance.work_start.min if !attendance.work_start.blank? %>
+                    <%= attendance.attendance_time.min if !attendance.attendance_time.blank? %>
                   </td>
                   
                   <!-- 退社 -->
                   <!-- 時 -->
                   <td class="table-body">
-                    <%= attendance.work_end.hour if !attendance.work_end.blank? %>
+                    <%= attendance.leaving_time.hour if !attendance.leaving_time.blank? %>
                   </td>
                   <!-- 分 -->
                   <td class="table-body">
-                    <%= attendance.work_end.min if !attendance.work_end.blank? %>
+                    <%= attendance.leaving_time.min if !attendance.leaving_time.blank? %>
                   </td>
                   
                   
@@ -95,14 +95,13 @@
                   </td>
                   
                   <td class="table-body">
-                    <%= attendance.rmarks if !attendance.blank?%>
+                    <%= attendance.remarks if !attendance.blank?%>
                   </td>
                   
                   <!-- 指示者確認㊞の表示  -->
                   <td class="table-body">
-                    <%= f.select :application_edit_state, Attendance.localed_application_edit_statuses[0..3], {}, {:class => "application_edit_state"}%>
-                  </td>
-                  
+                    <%= f.select :application_edit_state, Work.localed_application_edit_statuses[0..3], {}, {:class => "application_edit_state"}%>
+                  </td>1
                   <!-- 変更の表示  -->
                   <td class="table-body">
                     <%= check_box_tag 'check[]', attendance.id %>
