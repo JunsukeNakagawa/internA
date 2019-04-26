@@ -11,7 +11,7 @@
     </h4>
   </div>
   <div id="test-edit-popup" class="white-popup mfp-with-anim mfp-hide">
-    <%= form_tag attendancetime_edit_path, method: :post do %>
+    <%= form_tag update_applied_attendance_path, method: :post do %>
       <%= hidden_field_tag :id, @user.id %>
       <%= hidden_field_tag :first_day, @first_day %>  
       <% @edit_applications.each do |name, attendances| %>

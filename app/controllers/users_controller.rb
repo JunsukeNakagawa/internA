@@ -190,7 +190,7 @@ class UsersController < ApplicationController
       redirect_to :action => 'index'
     end
     @user = User.find(params[:id])
-    
+    @youbi = %w[日 月 火 水 木 金 土]
     @first_day = params[:first_day].to_datetime
     if @work.nil?
       @work = Work.new
@@ -233,13 +233,20 @@ class UsersController < ApplicationController
       
       # @note 初期値を変更前のカラムにするためparamsにはwork_start/endで渡しています
       # 　　　格納先はedited_work_start/endのため注意
-      # 申請者が入力されていたら『申請中』に変更する
-      if !item[:authorizer_user_id_of_attendance].blank?
-        attendance.applying1! 
-        # 申請者の番号も保持
-        @user.update_attributes(applied_last_time_user_id: item[:authorizer_user_id_of_attendance])
-      end
-      if item["attendance_time"].blank? || item["leaving_time"].blank?
+      # 在社時間ーでエラー表示
+      if (item["attendance_time"]).to_i > (item["leaving_time"]).to_i
+        if params[:check].nil?
+          flash[:danger] = '在社時間がーになっています'
+          redirect_back(fallback_location: root_path) and return
+        else
+          # 申請者が入力されていたら『申請中』に変更する
+          if !item[:authorizer_user_id_of_attendance].blank?
+            attendance.applying1! 
+            # 申請者の番号も保持
+            @user.update_attributes(applied_last_time_user_id: item[:authorizer_user_id_of_attendance])
+          end
+        end
+      elsif item["attendance_time"].blank? || item["leaving_time"].blank?
         # 申請者入力で出社/退社時間が空ならエラー表示
         flash[:danger] = '出社or退社時間が空になっています'
         redirect_back(fallback_location: root_path) and return
@@ -252,12 +259,12 @@ class UsersController < ApplicationController
         end
       end
 
-      if !item["attendance_time"].empty? || !item["attendance_time"].empty?
-        attendance.update_column(:edited_work_start, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["attendance_time"].to_i, item["attendance_time"].to_i))
+      if !item["attendance_time"].empty?
+        attendance.update_column(:edited_work_start, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["attendance_time"].to_i))
       end
       # 退勤があれば更新
-      if !item["leaving_time"].empty? || !item["leaving_time"].empty?
-        attendance.update_column(:edited_work_end, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time"].to_i, item["leaving_time"].to_i))
+      if !item["leaving_time"].empty?
+        attendance.update_column(:edited_work_end, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time"].to_i))
       end
       # チェックがあれば翌日の時間で退社扱い
       if !params[:check].nil? && !attendance.edited_work_end.nil?
@@ -266,13 +273,40 @@ class UsersController < ApplicationController
         end
       end
     end
+    redirect_to user_url(@user, params: { id: @user.id, first_day: params[:first_day] })
+  end
+  
+  # 申請された勤怠編集を更新する（承認や否認する）
+  def update_applied_attendance
     
-    # works_params.each do |id, value|
-    #   work=Work.find(id)
-    #   work.update_attributes(value)
-    # end
-    flash[:success] = "勤怠時間を編集しました"
-    # redirect_to user_path
+    # 変更チェックが1つ以上で勤怠変更情報を更新
+    if !params[:check].blank?
+      @attendances = Work.where("id in (?)", params[:application_edit_state])
+      params[:attendance].each do |id, item|
+        # 更新チェックがなければ何もしない
+        if !params[:check].include?(id)
+          next
+        end
+        
+        attendance = Work.find(id)
+        if attendance.blank?
+          next
+        end
+        
+        # 申請情報更新
+        attendance.update_attributes(item.permit(:application_edit_state))
+        
+        if attendance.approval2?
+          # 現在の出勤/退勤時刻を変更前として保持 @note 変更前が空（この日付では初回の変更）なら保存
+          attendance.update_attributes(before_edited_work_start: attendance.attendance_time) if attendance.before_edited_work_start.blank?
+          attendance.update_attributes(before_edited_work_end: attendance.leaving_time) if attendance.before_edited_work_end.blank?
+          # 承認された場合は出勤/退勤時刻を上書きする
+          attendance.update_attributes(attendance_time: attendance.edited_work_start, leaving_time: attendance.edited_work_end)
+        end
+      end
+    end
+    
+    @user = User.find(params[:id])
     redirect_to user_url(@user, params: { id: @user.id, first_day: params[:first_day] })
   end
   

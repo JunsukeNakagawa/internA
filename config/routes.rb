@@ -9,7 +9,8 @@ Rails.application.routes.draw do
   get  "users/:id/attendancetime_edit", to: "users#attendancetime_edit", as: 'attendancetime_edit'
   post  "users/:id/attendancetime_edit", to: "users#attendancetime_edit"
   post  "users/:id/attendancetime_update", to: "users#attendancetime_update"
-  patch  "users/:id/attendancetime_update", to: "users#attendancetime_update"
+  patch  "users/:id/attendancetime_update", to: "users#attendancetime_update", as: 'attendancetime_update'
+  post '/users/applied', to: 'users#update_applied_attendance', as: 'update_applied_attendance'
   post  "users/:id/update", to: "users#update"
   patch  "users/:id/update", to: "users#update"
   post  "users/:id/timeupdate", to: "users#timeupdate"

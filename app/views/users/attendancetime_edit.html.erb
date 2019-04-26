@@ -2,95 +2,94 @@
 <html>
 <% current_user=User.find(params[:id]) %>
 <body>
-<br>
-<br>
-<br>
-<table>
-	<tbody>
-		<tr>
-			<td rowspan="2">日付</td>
-			<td rowspan="2">曜日</td>
-			<td colspan="3">出社</td>
-			<td colspan="3">退社</td>
-			<th class="">翌日</th>
-			<td rowspan="2">在社時間</td>
-			<td rowspan="2">備考</td>
-			<td rowspan="2">指示書確認㊞</td>
-		</tr>
-	</tbody>
-</table>
-<%= form_for @work, :url => {:action => 'attendancetime_update'}, method: "patch" do %>
-<% (@first_day..@last_day).each do |date|%> 
- <table>
-	<tbody>
-		<tr>
-			<td><%= @first_day.month %>/<%= date.day %></td>
-			<td>
-				<%= %w(日 月 火 水 木 金 土)[date.wday] %></td>
-			<td>
-				<% if Work.find_by(day: date, user_id: current_user.id).nil? %>
-					<% work = Work.new(day: date, user_id: current_user.id) %>
-					<% work.save %>
-				<% else %>
-					<% work = Work.find_by(day: date, user_id: current_user.id) %>
-				<% end %>
-				<%= fields_for "works[]", work do |fi| %>
-					<% if work.applying1? %>
-						<%= fi.time_field :edited_work_start %>
-					<% elsif work.attendance_time.nil? %>
-						<%= fi.time_field :attendance_time, :include_blank => true %>
-					<% else %>
-						<%= fi.time_field :attendance_time, :default => work.attendance_time %>
-					<% end %>
-					</td>
-				<td>
-					<% if work.applying1? %>
-						<%= fi.time_field :edited_work_end %>
-					<% elsif work.leaving_time.nil? %>
-						<%= fi.time_field :leaving_time, :include_blank => true %>
-					<% else %>
-						<%= fi.time_field :leaving_time, :default => work.leaving_time %>
-					<% end %>
-			</td>
-			<td class="">
-      	<%= check_box_tag 'check[]', work.day %>
-      </td>
-			<td>
-				<% if !work.attendance_time.nil? && !work.leaving_time.nil? %>
-					<% officeTimeDay = BigDecimal(((work.leaving_time - work.attendance_time)/60/60).to_s).round(3).to_f %>
-					<%= sprintf("%.2f", officeTimeDay ) %>時間
-				<% end %>
-			</td>
-			<td>
-					<% if work.work_description.nil? %>
-						<%= fi.text_field :work_description, :include_blank => true %>
-					<% else %>
-						<%= fi.text_field :work_description, :default => work.work_description %>
-					<% end %>
-			</td>
-			<!-- 指示者確認㊞の表示  -->
-        <td class="table-body">
-          <% if !work.authorizer_user_id_of_attendance.blank? && !User.find_by(id: work.authorizer_user_id_of_attendance).blank? %>
-            <% if work.applying1? %>
-              <%= User.find_by(id: work.authorizer_user_id_of_attendance).name %>へ申請中
-            <% elsif work.approval2? %>
-              <%= User.find_by(id: work.authorizer_user_id_of_attendance).name %>から承認済
-            <% elsif work.denial3? %>
-              <%= User.find_by(id: work.authorizer_user_id_of_attendance).name %>から否認
-            <% else %>
-            <% end %>
+<%= form_tag attendancetime_update_path, method: :patch do %>
+  <%= hidden_field_tag :id, @user.id %>
+  <%= hidden_field_tag :first_day, @first_day %>
+  <table class="txt1 table table-bordered table-striped table-condensed table-status">
+    <thead>
+      <tr>
+        <th class="table-header">日付</th>
+        <th class="table-header">曜日</th>
+        <th class="table-header">出社</th>
+        <th class="table-header">退社</th>
+        <th class="table-header">翌日</th>
+        <th class="table-header">在社時間</th>
+        <th class="table-header">備考</th>
+        <th class="table-header">指示者確認㊞</th>
+      </tr>
+    </thead>
+    <tbody>
+        <% @attendances.each do |attendance| %>
+          <%= fields_for("works[]", attendance) do |f| %>
+            <tr>
+              <td class="table-body"><%= attendance.day.month %>/<%= attendance.day.day %></td>
+              <td class="table-body"><%= @youbi[attendance.day.wday] %></td>
+              
+              <% if attendance.applying1? %>
+                <!-- 申請中なら申請時間表示 -->
+                <!-- 出社時間の表示  -->
+                <td class="table-body">
+                  <%= f.time_field :edited_work_start, {class: "form-control bootstrap-date-only-width edited_work_start"} %>
+                </td>
+                
+                <!-- 退社時間の表示  -->
+                <td class="table-body">
+                  <%= f.time_field :edited_work_end, {class: "form-control bootstrap-date-only-width edited_work_end"} %>
+                </td>
+              <% else %>
+                <!-- 未申請なら現在の時間表示 -->
+                <!-- 出社時間の表示  -->
+                <td class="table-body">
+                  <%= f.time_field :attendance_time, {class: "form-control bootstrap-date-only-width edited_work_start"} %>
+                </td>
+                
+                <!-- 退社時間の表示  -->
+                <td class="table-body">
+                  <%= f.time_field :leaving_time, {class: "form-control bootstrap-date-only-width edited_work_end"} %>
+                </td>
+              <% end %>
+              
+              <!-- 翌日のチェックボックスの表示  -->
+              <td class="table-body">
+                <%= check_box_tag 'check[]', attendance.day %>
+              </td>
+              
+              <!-- 在社時間の表示  -->
+              <td class="table-body">
+                <% if !attendance.attendance_time.nil? && !attendance.leaving_time.nil? %>
+                  <%= format("%.2f", (attendance.leaving_time - attendance.attendance_time)/3600) %>
+                <% end %>
+              </td>
+              
+              <!-- 備考の表示  -->
+              <td class="table-body">
+                <%= f.text_field :remarks, class: 'form-control'%>
+              </td>
+              
+              <!-- 指示者確認㊞の表示  -->
+              <td class="table-body">
+                <% if !attendance.authorizer_user_id_of_attendance.blank? && !User.find_by(id: attendance.authorizer_user_id_of_attendance).blank? %>
+                  <% if attendance.applying1? %>
+                    <%= User.find_by(id: attendance.authorizer_user_id_of_attendance).name %>へ申請中
+                  <% elsif attendance.approval2? %>
+                    <%= User.find_by(id: attendance.authorizer_user_id_of_attendance).name %>から承認済
+                  <% elsif attendance.denial3? %>
+                    <%= User.find_by(id: attendance.authorizer_user_id_of_attendance).name %>から否認
+                  <% else %>
+                  <% end %>
+                <% end %>
+                <%= f.collection_select :authorizer_user_id_of_attendance, @superior_users, :id, :name, {:include_blank => true, :selected => 0}, {:class => "form-control authorizer_user_id_of_attendance"} %>
+              </td>
+            </tr>
           <% end %>
-          <%= fi.collection_select :authorizer_user_id_of_attendance, @superior_users, :id, :name, {:include_blank => true, :selected => 0}, {:class => "form-control authorizer_user_id_of_attendance"} %>
-        </td>
-			<% end %>
-		</tr>
-	</tbody>
-</table>
+        <% end %>
+    </tbody>
+  </table>
+  <div class="center">
+
+    <%= link_to "キャンセル", user_url(@user, params: { id: @user.id, first_day: @first_day }), style:"width:200px; color:white", class:"btn btn-lg btn-primary" %>
+    <%= submit_tag "編集を保存する", style:"width:200px", class: "btn btn-lg btn-primary" %>
+
+  </div>
 <% end %>
-<br>
-<%= submit_tag "保存", class: "btn btn-lg btn-primary" %>
-<% end %>
-<br>
-<%= link_to("キャンセル", user_path , class: "btn btn-lg btn-primary") %>
-</body>
 </html>
