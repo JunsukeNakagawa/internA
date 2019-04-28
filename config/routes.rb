@@ -51,6 +51,8 @@ Rails.application.routes.draw do
   resources :account_activations, only: [:edit]
   resources :password_resets,     only: [:new, :create, :edit, :update]
   resources :works
+  resources :base_points
+  post '/base_point/create',  to: 'base_points#create', as: 'base_point_create'
   
   # CSV出力用
   get '/user_attendance_output', to: 'users#user_attendance_output', as: 'user_attendance_output' 

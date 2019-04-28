@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @base_point.name %>
+</p>
+
+<p>
+  <strong>Attendance state:</strong>
+  <%= @base_point.attendance_state %>
+</p>
+
+<p>
+  <strong>Number:</strong>
+  <%= @base_point.number %>
+</p>
+
+<%= link_to 'Edit', edit_base_point_path(@base_point) %> |
+<%= link_to 'Back', base_points_path %>

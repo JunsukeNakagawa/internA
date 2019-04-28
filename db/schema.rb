@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190114064539) do
+ActiveRecord::Schema.define(version: 20190428080933) do
+
+  create_table "base_points", force: :cascade do |t|
+    t.string "name"
+    t.integer "attendance_state"
+    t.integer "number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "one_month_attendances", force: :cascade do |t|
     t.integer "application_user_id"

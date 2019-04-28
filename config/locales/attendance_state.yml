@@ -1,0 +1,6 @@
+ja:
+  attendance_status:
+    article:
+      nothing: 'なし'
+      work_start: '出勤'
+      work_end: '退勤'
