@@ -106,7 +106,7 @@ class User < ApplicationRecord
     # 重複id
     overlap_id = []
     
-    CSV.foreach(file.path, headers: true, encoding: 'Shift_JIS:UTF-8') do |row|
+    CSV.foreach(file.path, headers: true) do |row|
       
       # id重複する場合はその行のみカット
       if exists?(id: row["id"])
