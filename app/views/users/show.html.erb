@@ -40,7 +40,7 @@
 <br>
 <br>
 <br>
-<%= link_to("勤怠編集", attendancetime_edit_path(first_day: @first_day), class: "btn btn-lg btn-primary") if session_user.admin? || current_user == session_user %>
+<%= link_to("勤怠編集", attendancetime_edit_path(first_day: @first_day), :style=>"color:white;" , class: "btn btn-lg btn-primary") if session_user.admin? || current_user == session_user %>
 <%= link_to("CSV出力", user_path(@user, params: { id: @user.id, first_day: @first_day, format: :csv}), :style=>"color:white;" ,class: "btn btn-lg btn-primary") if current_user == @user %>
 <%= render 'edit_attendance_log' if current_user == @user %>
 <br>
