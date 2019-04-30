@@ -62,7 +62,7 @@
   <div id=  "sampleAccordionCollapse"  class="panel-collapse collapse">
 	  <div class="panel-body">
 	    <%= form_for(@base_point, url: base_point_create_path) do |f| %>
-        <%= f.label :name, "名前"%>
+        <%= f.label :name, "拠点名"%>
         <%= f.text_field :name, class: 'form-control' %>
         <%= f.label :attendance_state, "勤怠種類"%>
         <%= f.select :attendance_state, BasePoint.localed_attendance_state, {}, class: 'form-control' %>

@@ -319,7 +319,7 @@ class UsersController < ApplicationController
          !a.attendance_time.blank? &&
          a.leaving_time.blank? )
         }
-     @working_users[user.uid] = user.name
+     @working_users[user.employee_number] = user.name
     end
    end
   end
@@ -422,11 +422,11 @@ class UsersController < ApplicationController
 
     def user_params
       params.require(:user).permit(:id, :name, :email, :password,:affiliation,
-                                   :uid, :cardID, :basictime, :workingtime, :working_time_End)
+                                   :employee_number, :uid, :basic_work_time, :designated_work_start_time, :designated_work_end_time)
     end
     
     def time_params
-      params.require(:user).permit(:workingtime,:basictime)
+      params.require(:user).permit(:designated_work_start_time,:basic_work_time)
     end
     
     def works_params
@@ -441,7 +441,7 @@ class UsersController < ApplicationController
       csv_str = CSV.generate do |csv|
         # ユーザ情報のヘッダー
         csv << ["#{@first_day.strftime("%Y年%m月")}　時間管理表"]
-        csv << ["名前", @user.name, "所属", @user.affiliation, "コード", @user.uid, "出勤日数", "#{@working_days}日"]
+        csv << ["名前", @user.name, "所属", @user.affiliation, "コード", @user.employee_number, "出勤日数", "#{@working_days}日"]
         # 改行
         csv << [""]
         

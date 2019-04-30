@@ -29,7 +29,7 @@ class BasePointsController < ApplicationController
     if @base_point.save
       flash[:success] = "拠点登録完了しました"
     else
-      flash[:error] = "拠点登録に失敗しました"
+      flash[:danger] = "拠点登録に失敗しました"
     end
     redirect_to base_points_path
   end
@@ -37,25 +37,23 @@ class BasePointsController < ApplicationController
   # PATCH/PUT /base_points/1
   # PATCH/PUT /base_points/1.json
   def update
-    respond_to do |format|
-      if @base_point.update(base_point_params)
-        format.html { redirect_to @base_point, notice: '拠点の変更完了しました' }
-        format.json { render :show, status: :ok, location: @base_point }
-      else
-        format.html { render :edit }
-        format.json { render json: @base_point.errors, status: :unprocessable_entity }
-      end
+    if @base_point.update(base_point_params)
+      flash[:success] = "拠点情報編集完了しました"
+    else
+      flash[:danger] = "拠点情報編集失敗しました"
     end
+  redirect_to base_points_path
   end
 
   # DELETE /base_points/1
   # DELETE /base_points/1.json
   def destroy
-    @base_point.destroy
-    respond_to do |format|
-      format.html { redirect_to base_points_url, notice: '拠点の削除完了しました' }
-      format.json { head :no_content }
+    if @base_point.destroy
+      flash[:success] = "拠点情報削除しました"
+    else
+      flash[:danger] = "拠点情報削除に失敗しました"
     end
+    redirect_to base_points_path
   end
 
   private

@@ -10,20 +10,20 @@
   <%= f.label :所属 %>
   <%= f.text_field :affiliation, class: 'form-control' %>
   
-  <%= f.label :uid, "社員番号"%>
+  <%= f.label :employee_number, "社員番号"%>
+  <%= f.number_field :employee_number, class: 'form-control' %>
+  
+  <%= f.label :uid, "カード番号"%>
   <%= f.number_field :uid, class: 'form-control' %>
   
-  <%= f.label :cardID, "カードID"%>
-  <%= f.number_field :cardID, class: 'form-control' %>
+  <%= f.label :basic_work_time, "基本時間"%>
+  <%= f.time_field :basic_work_time, class: 'form-control' %>
   
-  <%= f.label :basictime, "基本勤務時間"%>
-  <%= f.time_field :basictime, class: 'form-control' %>
+  <%= f.label :designated_work_start_time, "指定勤務開始時間"%>
+  <%= f.time_field :designated_work_start_time, class: 'form-control' %>
   
-  <%= f.label :workingtime, "指定勤務開始時間"%>
-  <%= f.time_field :workingtime, class: 'form-control' %>
-  
-  <%= f.label :working_time_End, "指定勤務終了時間"%>
-  <%= f.time_field :working_time_End, class: 'form-control' %>
+  <%= f.label :designated_work_end_time, "指定勤務終了時間"%>
+  <%= f.time_field :designated_work_end_time, class: 'form-control' %>
 
   <%= f.label :パスワード %>
   <%= f.password_field :password, class: 'form-control' %>

@@ -11,10 +11,10 @@
 			  <%=  @first_day.year %>年<%=  @first_day.month %>月　時間管理表
 			  <%= link_to "→", user_path(first_day: @first_day.next_month) %></td>
 			<td  colspan="3">
-				指定勤務開始時間　<%= format("%.2f", ((@user.workingtime.hour*60.0) + @user.workingtime.min)/60) if !@user.workingtime.blank? %><br>
-				指定勤務終了時間　<%= format("%.2f", ((@user.working_time_End.hour*60.0) + @user.working_time_End.min)/60) if !@user.working_time_End.blank? %>
+				指定勤務開始時間　<%= format("%.2f", ((@user.designated_work_start_time.hour*60.0) + @user.designated_work_start_time.min)/60) if !@user.designated_work_start_time.blank? %><br>
+				指定勤務終了時間　<%= format("%.2f", ((@user.designated_work_end_time.hour*60.0) + @user.designated_work_end_time.min)/60) if !@user.designated_work_end_time.blank? %>
 			</td>
-			<td colspan="3"> 基本時間: <%= format("%.2f", ((@user.basictime.hour*60.0) + @user.basictime.min)/60) if !@user.basictime.blank? %>時間 </td>
+			<td colspan="3"> 基本時間: <%= format("%.2f", ((@user.basic_work_time.hour*60.0) + @user.basic_work_time.min)/60) if !@user.basic_work_time.blank? %>時間 </td>
 			<td>初日 <%=  @first_day.month %>/<%=  @first_day.day %></td>
 		</tr>
 		<tr>
@@ -22,7 +22,7 @@
 			<td colspan="3">
 				氏名:<%= current_user.name %>
 				</td>
-			<td>コード:<%= current_user.uid %></td>
+			<td>コード:<%= current_user.employee_number %></td>
 			<td></td>
 			<td>出勤日数 
 				<% @working_days = Work.where(user_id: params[:id] ,day: Time.new(@first_day.year,@first_day.month).all_month).select("leaving_time").count %>

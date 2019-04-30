@@ -42,13 +42,13 @@ ActiveRecord::Schema.define(version: 20190428080933) do
     t.datetime "activated_at"
     t.string "reset_digest"
     t.datetime "reset_sent_at"
-    t.time "basictime"
-    t.time "workingtime"
+    t.time "basic_work_time"
+    t.time "designated_work_start_time"
     t.string "affiliation"
-    t.datetime "working_time_End"
-    t.integer "uid"
+    t.datetime "designated_work_end_time"
+    t.integer "employee_number"
     t.boolean "superior"
-    t.integer "cardID"
+    t.integer "uid"
     t.integer "applied_last_time_user_id"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
