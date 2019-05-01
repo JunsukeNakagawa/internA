@@ -40,12 +40,12 @@
                 <!-- 未申請なら現在の時間表示 -->
                 <!-- 出社時間の表示  -->
                 <td class="table-body">
-                  <%= f.time_field :attendance_time, {class: "form-control bootstrap-date-only-width edited_work_start"} %>
+                  <%= f.time_field :attendance_time, {class: "form-control bootstrap-date-only-width attendance_time"} %>
                 </td>
                 
                 <!-- 退社時間の表示  -->
                 <td class="table-body">
-                  <%= f.time_field :leaving_time, {class: "form-control bootstrap-date-only-width edited_work_end"} %>
+                  <%= f.time_field :leaving_time, {class: "form-control bootstrap-date-only-width leaving_time"} %>
                 </td>
               <% end %>
               
@@ -78,7 +78,7 @@
                   <% else %>
                   <% end %>
                 <% end %>
-                <%= f.collection_select :authorizer_user_id_of_attendance, @superior_users, :id, :name, {:include_blank => true, :selected => 0}, {:class => "form-control authorizer_user_id_of_attendance"} %>
+                <%= f.collection_select :authorizer_user_id_of_attendance, @superior_users, :id, :name, {:include_blank => true}, {:class => "form-control authorizer_user_id_of_attendance"} %>
               </td>
             </tr>
           <% end %>
@@ -87,7 +87,7 @@
   </table>
   <div class="center">
 
-    <%= link_to "キャンセル", user_url(@user, params: { id: @user.id, first_day: @first_day }), style:"width:200px; color:white", class:"btn btn-lg btn-primary" %>
+    <%= link_to "キャンセル", user_url(@user, params: { id: @user.id, first_day: @first_day }), style:"color:white", class:"btn btn-lg btn-primary" %>
     <%= submit_tag "編集を保存する", style:"width:200px", class: "btn btn-lg btn-primary" %>
 
   </div>

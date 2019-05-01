@@ -1,5 +1,6 @@
 class BasePointsController < ApplicationController
   before_action :set_base_point, only: [:show, :edit, :update, :destroy]
+  before_action :admin_user,     only: [:index, :show, :new, :edit, :create, :update, :destroy ]
 
   # GET /base_points
   # GET /base_points.json
@@ -65,5 +66,9 @@ class BasePointsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def base_point_params
       params.require(:base_point).permit(:name, :attendance_state, :number)
+    end
+    
+    def admin_user
+      redirect_to(root_url) unless current_user.admin?
     end
 end

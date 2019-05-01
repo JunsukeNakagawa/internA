@@ -70,6 +70,8 @@ class WorksController < ApplicationController
           attendance.update_column(:scheduled_end_time, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["scheduled_end_time(4i)"].to_i, item["scheduled_end_time(5i)"].to_i))
         end
       end
+    else
+      flash[:danger] = "変更チェックにチェックをいれてください"
     end
     
     redirect_to user_url(@user, params: { id: @user.id, first_day: params[:first_day] })
@@ -86,7 +88,6 @@ class WorksController < ApplicationController
       @work.update(scheduled_end_time: time_change - 9.hours)
     end
     flash[:success] = "残業申請しました。"
-    # redirect_to user_path(current_user, Date.today)
     redirect_to user_url
   end
   
@@ -152,6 +153,8 @@ class WorksController < ApplicationController
         # 申請情報更新
         attendance.update_attributes(item.permit(:application_state))
       end
+    else
+      flash[:danger] = "変更チェックにチェックをいれてください"
     end
 
     @user = User.find(params[:id])

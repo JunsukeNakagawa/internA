@@ -1,9 +1,9 @@
 class UsersController < ApplicationController
-  before_action :logged_in_user, only: [:index, :edit, :update, :destroy]
+  before_action :logged_in_user, only: [:edit, :update, :destroy]
   # before_action :show_user, only: [:show, :attendancetime_edit, :attendancetime_update]
   # before_action :correct_user,   only: [:edit, :update]
   before_action :admin_or_correct_user,   only: [:edit, :update]
-  before_action :admin_user,     only: [:destroy, :timeupdate, :update ]
+  before_action :admin_user,     only: [:index ,:destroy, :timeedit, :timeupdate, :update, :employees_display]
   
   require 'csv'
   
@@ -225,17 +225,27 @@ class UsersController < ApplicationController
     
     # 各勤怠情報を更新
     params[:works].each do |id, item|
-      # 申請者がない行はカット
-      if item["authorizer_user_id_of_attendance"].blank?
-        next
+      
+      if !item["authorizer_user_id_of_attendance"].blank? && (item["attendance_time"].blank? || item["leaving_time"].blank?)
+        if (item["edited_work_start"].blank? || item["edited_work_end"].blank?)
+          flash[:danger] = '勤怠時間の変更情報が入力されていません'
+          redirect_back(fallback_location: root_path) and return
+        end
       end
+      
+      if item["authorizer_user_id_of_attendance"].blank?
+        if (!item["edited_work_start"].blank? || !item["edited_work_end"].blank?) || (!item["attendance_time"].blank? || !item["leaving_time"].blank?)
+          flash[:danger] = '申請者が入力されていません'
+          redirect_back(fallback_location: root_path) and return
+        end
+      end
+      
       attendance = Work.find(id)
       attendance.update_attributes(item.permit(:remarks, :overtime_work, :work_description, :authorizer_user_id_of_attendance))
-      
       # @note 初期値を変更前のカラムにするためparamsにはwork_start/endで渡しています
       # 　　　格納先はedited_work_start/endのため注意
       # 在社時間ーでエラー表示
-      if (item["attendance_time"]).to_i > (item["leaving_time"]).to_i
+      if ((item["edited_work_start"]).to_i > (item["edited_work_end"]).to_i) || ((item["attendance_time"]).to_i > (item["leaving_time"]).to_i)
         if params[:check].nil?
           flash[:danger] = '在社時間がーになっています'
           redirect_back(fallback_location: root_path) and return
@@ -247,7 +257,7 @@ class UsersController < ApplicationController
             @user.update_attributes(applied_last_time_user_id: item[:authorizer_user_id_of_attendance])
           end
         end
-      elsif item["attendance_time"].blank? || item["leaving_time"].blank?
+      elsif (item["edited_work_start"].blank? || item["edited_work_end"].blank?) && (item["attendance_time"].blank? || item["leaving_time"].blank?) && !item["authorizer_user_id_of_attendance"].blank?
         # 申請者入力で出社/退社時間が空ならエラー表示
         flash[:danger] = '出社or退社時間が空になっています'
         redirect_back(fallback_location: root_path) and return
@@ -260,11 +270,11 @@ class UsersController < ApplicationController
         end
       end
 
-      if !item["attendance_time"].empty?
+      if !item["attendance_time"].blank?
         attendance.update_column(:edited_work_start, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["attendance_time"].to_i))
       end
       # 退勤があれば更新
-      if !item["leaving_time"].empty?
+      if !item["leaving_time"].blank?
         attendance.update_column(:edited_work_end, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time"].to_i))
       end
       # チェックがあれば翌日の時間で退社扱い
@@ -274,12 +284,13 @@ class UsersController < ApplicationController
         end
       end
     end
+    flash[:success] = '勤怠変更を申請しました'
     redirect_to user_url(@user, params: { id: @user.id, first_day: params[:first_day] })
   end
   
   # 申請された勤怠編集を更新する（承認や否認する）
   def update_applied_attendance
-    
+    @user = User.find(params[:id])
     # 変更チェックが1つ以上で勤怠変更情報を更新
     if !params[:check].blank?
       @attendances = Work.where("id in (?)", params[:application_edit_state])
@@ -305,9 +316,9 @@ class UsersController < ApplicationController
           attendance.update_attributes(attendance_time: attendance.edited_work_start, leaving_time: attendance.edited_work_end)
         end
       end
+    else
+      flash[:danger] = '変更チェックにチェックを入れて下さい'
     end
-    
-    @user = User.find(params[:id])
     redirect_to user_url(@user, params: { id: @user.id, first_day: params[:first_day] })
   end
   
@@ -477,6 +488,14 @@ class UsersController < ApplicationController
     #   @user = User.find(params[:id])
     #   redirect_to(root_url) unless current_user?(@user)
     # end
+    
+    def logged_in_user
+      unless logged_in?
+        store_location
+        flash[:danger] = "ログインしてください"
+        redirect_to login_url
+      end
+    end
     
     def show_user
       @user = User.find(params[:id])
