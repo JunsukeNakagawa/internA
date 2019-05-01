@@ -96,7 +96,7 @@ class WorksController < ApplicationController
     @user = User.find(params[:work][:user_id])
     
     # 終了予定時刻が空なら何もしない
-    if params[:work]["scheduled_end_time(4i)"].blank? || params[:work]["scheduled_end_time(5i)"].blank?
+    if params[:work]["scheduled_end_time"].blank?
       flash[:danger] = "残業申請の終了予定時刻が空です"
       redirect_to user_url(@user, params: { id: @user.id, first_day: params[:work][:first_day] })
       return
@@ -122,15 +122,14 @@ class WorksController < ApplicationController
     attendance.update_attributes(params.require(:work).permit(:work_description, :authorizer_user_id, :application_state))
     
     # 終了予定時間があれば更新
-    if !params[:work]["scheduled_end_time(4i)"].blank? || !params[:work]["scheduled_end_time(5i)"].blank?
-      attendance.update_column(:scheduled_end_time, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, params[:work]["scheduled_end_time(4i)"].to_i, params[:work]["scheduled_end_time(5i)"].to_i))
+    if !params[:work]["scheduled_end_time"].blank?
+      attendance.update_column(:scheduled_end_time, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, params[:work]["scheduled_end_time"].to_i))
     end
     
     # 翌日チェックONなら終了予定時間を＋1日する
     if !params[:checkbox].blank?
       attendance.update_column(:scheduled_end_time, attendance.scheduled_end_time+1.day)
     end
-    
     flash[:success] = "残業申請完了しました"
     redirect_to user_url(@user, params: { id: @user.id, first_day: params[:work][:first_day] })
   end

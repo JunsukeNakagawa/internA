@@ -129,8 +129,9 @@
 			<td><%= work.scheduled_end_time.min if !work.scheduled_end_time.nil? %></td>
 			<td><%= work.work_description if !work.work_description.nil? %></td>
 			<td class="table-body">
+				<% if !work.authorizer_user_id.blank? && !User.find_by(id: work.authorizer_user_id).blank? %>
             <% if work.applying? %>
-              <%= User.find_by(id: work.authorizer_user_id_of_attendance).name %>へ残業申請中
+              <%= User.find_by(id: work.authorizer_user_id_of_attendance) %>へ残業申請中
             <% elsif work.approval? %>
               <%= User.find_by(id: work.authorizer_user_id_of_attendance).name %>から残業承認済
             <% elsif work.denial? %>
@@ -143,6 +144,7 @@
             <% elsif work.denial3? %>
               <%= User.find_by(id: work.authorizer_user_id_of_attendance).name %>から勤怠編集否認
             <% end %>
+       	<% end %>
        </td>
 		</tr>
 	</tbody>
@@ -212,7 +214,7 @@
             <td class="table-body"><%= @youbi[work.day.wday] %></td>
             <!-- 終了予定時間の表示  -->
             <td class="table-body">
-              <%= f.datetime_select :scheduled_end_time, {discard_year: true, discard_month: true, discard_day: true, include_blank: true}, {class: "form-control bootstrap-date-only-width scheduled_end_time"} %>
+              <%= f.time_field :scheduled_end_time, {class: "form-control bootstrap-date-only-width scheduled_end_time"} %>
             </td>
             <!-- 翌日のチェックボックスの表示  -->
             <td class="table-body">
@@ -226,7 +228,7 @@
             <td class="table-body">
               <% if !work.authorizer_user_id.blank? && !User.find_by(id: work.authorizer_user_id).blank? %>
                 <% if work.applying? %>
-                  <%= User.find_by(id: work.authorizer_user_id).name %>へ申請中
+                  <%= User.find_by(id: work.authorizer_user_id).name %>へ残業申請中
                 <% elsif work.approval? %>
                   <%= User.find_by(id: work.authorizer_user_id).name %>から承認済
                 <% elsif work.denial? %>
