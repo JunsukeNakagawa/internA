@@ -1,5 +1,4 @@
 Rails.application.configure do
-  config.assets.precompile = ['*.js','*.css']
   # Settings specified here will take precedence over those in config/application.rb.
   
   # Code is not reloaded between requests.
@@ -34,7 +33,7 @@ Rails.application.configure do
   config.assets.compile = false
 
   # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
-
+  config.assets.precompile = ['*.js']
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.action_controller.asset_host = 'http://assets.example.com'
 

@@ -15,7 +15,7 @@
 //= require jquery.magnific-popup
 //= require bootstrap
 //= require turbolinks
-// require_tree .
+//= require_tree .
 
 /* global $ */
 
