@@ -12,7 +12,6 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require jquery.magnific-popup
 //= require bootstrap
 //= require turbolinks
 //= require_tree .
