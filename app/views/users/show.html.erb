@@ -131,11 +131,11 @@
 			<td class="table-body">
 				<% if !work.authorizer_user_id.blank? && !User.find_by(id: work.authorizer_user_id).blank? %>
             <% if work.applying? %>
-              <%= User.find_by(id: work.authorizer_user_id_of_attendance) %>へ残業申請中
+              <%= User.find_by(id: work.authorizer_user_id).name %>へ残業申請中
             <% elsif work.approval? %>
-              <%= User.find_by(id: work.authorizer_user_id_of_attendance).name %>から残業承認済
+              <%= User.find_by(id: work.authorizer_user_id).name %>から残業承認済
             <% elsif work.denial? %>
-              <%= User.find_by(id: work.authorizer_user_id_of_attendance).name %>から残業否認
+              <%= User.find_by(id: work.authorizer_user_id).name %>から残業否認
             <% end %>
             <% if work.applying1? %>
               <%= User.find_by(id: work.authorizer_user_id_of_attendance).name %>へ勤怠編集申請中
