@@ -76,9 +76,6 @@ class UsersController < ApplicationController
 
     # 承認済みの勤怠編集一覧を取得
     @edit_log_applications = Work.where(user_id: @user.id, application_edit_state: :approval2)
-    if current_user.superior == true
-      @edit_log_applications = Work.where(authorizer_user_id_of_attendance: @user.id, application_edit_state: :approval2)
-    end
     # 名前ごとに分類
     @edit_log_applications = @edit_log_applications.group_by do |application|
       User.find_by(id: application.user_id).name
